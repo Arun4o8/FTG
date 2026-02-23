@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix the Glitch | Access Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: #18181b;
+            --primary: #22c55e;
+            --primary-glow: rgba(34, 197, 94, 0.4);
+            --text: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border: #27272a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .glitch-title {
+            font-size: 2.5rem;
+            text-align: center;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px var(--primary-glow);
+            letter-spacing: 2px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px var(--primary-glow);
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 12px 24px;
+            font-family: inherit;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+            width: 100%;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .option {
+            display: block;
+            padding: 15px;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: var(--bg);
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+        }
+
+        .option.selected {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--primary);
+        }
+
+        .option input {
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        pre {
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+
+        code {
+            font-family: 'Share Tech Mono', monospace;
+            color: #eab308;
+        }
+
+        .loader {
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="glitch-title">FIX_THE_GLITCH();</h1>
+
+        <div id="loading" class="card" style="text-align: center;">
+            <p>> Establishing connection to mainframe...</p>
+            <p>> Downloading glitch fragments...</p>
+            <div class="loader"></div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="hidden">
+            <div class="card">
+                <h2 style="margin-bottom: 15px; color: var(--primary);">> INITIALIZE_PARTICIPANT</h2>
+                <div class="form-group">
+                    <label>> enter_full_name:</label>
+                    <input type="text" id="name" placeholder="_" required>
+                </div>
+                <div class="form-group">
+                    <label>> enter_college:</label>
+                    <input type="text" id="college" placeholder="_" required>
+                </div>
+                <div class="form-group">
+                    <label>> enter_department:</label>
+                    <input type="text" id="dept" placeholder="_" required>
+                </div>
+                <div class="form-group">
+                    <label>> enter_email:</label>
+                    <input type="email" id="mail" placeholder="_" required>
+                </div>
+                <div class="form-group">
+                    <label>> enter_phone_number:</label>
+                    <input type="tel" id="phone" placeholder="_" required>
+                </div>
+                <button class="btn" id="start-btn">ACCESS_GRANTED</button>
+                <p id="start-error" style="color: #ef4444; margin-top: 10px;" class="hidden">Error: Core logic failure.
+                    Invalid parameters.</p>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div id="questions-container"></div>
+            <div class="card">
+                <button class="btn" id="submit-btn" style="margin-top: 10px;">EXECUTE_COMPILE();</button>
+                <p id="submit-error" style="color: #ef4444; margin-top: 10px;" class="hidden">Error: Unanswered
+                    variables found in sequence.</p>
+                <div id="submit-loader" class="loader hidden"></div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden card" style="text-align: center;">
+            <h2 style="color: var(--primary); font-size: 2rem; margin-bottom: 10px;">> COMPILATION_SUCCESS</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">Process ended with exit code 0.</p>
+            <div style="font-size: 1.5rem; margin-bottom: 10px;">
+                Participant: <span id="res-name" style="color: var(--primary);"></span>
+            </div>
+            <div
+                style="font-size: 3.5rem; margin: 20px 0; color: var(--primary); text-shadow: 0 0 15px var(--primary-glow);">
+                <span id="res-score"></span> / <span id="res-total"></span>
+            </div>
+            <p style="color: var(--text-muted);">> Data successfully pushed to admin terminal.</p>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyet4FC3zq5nhy95hXqkQUYSDdTTiCn1xJ0Ig91rpQAXb3qmdw-uc28RXkl_Wst-f4tkg/exec';
+
+        let questions = [];
+        let userAnswers = [];
+
+        // Hardcoded questions. If you don't want to use Google Sheets for questions, 
+        // you can just type your questions right here in the code!
+        const fallbackQuestions = [
+            {
+                q: "What does HTML stand for?",
+                opts: ["Hyper Text Preprocessor", "Hyper Text Markup Language", "Hyper Multiple Language", "Hyper Tool Multi Language"],
+                ans: 1
+            },
+            {
+                q: "Spot the Glitch:\n<pre><code>let x = 10;\nconst y = 20;\nx = y;\ny = x; // GLITCH?</code></pre>",
+                opts: ["let x=10 syntax error", "const variable cannot be reassigned", "x = y is invalid", "Code executes fine"],
+                ans: 1
+            },
+            {
+                q: "What will `console.log(typeof null)` output in JavaScript?",
+                opts: ["null", "undefined", "object", "string"],
+                ans: 2
+            }
+        ];
+
+        async function init() {
+            try {
+                if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') throw new Error("URL_NOT_SET");
+
+                const res = await fetch(SCRIPT_URL + '?action=getQuestions');
+                const data = await res.json();
+
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('start-screen').classList.remove('hidden');
+
+                if (data && data.questions && data.questions.length > 0) {
+                    questions = data.questions;
+                    userAnswers = new Array(questions.length).fill(null);
+                } else {
+                    // Fall back to hardcoded questions
+                    console.warn("No questions in database. Using local fallback.");
+                    questions = fallbackQuestions;
+                    userAnswers = new Array(questions.length).fill(null);
+                }
+            } catch (e) {
+                console.warn("Connection or URL failed. Defaulting to local fallback questions.");
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('start-screen').classList.remove('hidden');
+                questions = fallbackQuestions;
+                userAnswers = new Array(questions.length).fill(null);
+            }
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            const name = document.getElementById('name').value.trim();
+            const college = document.getElementById('college').value.trim();
+            const dept = document.getElementById('dept').value.trim();
+            const mail = document.getElementById('mail').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!name || !college || !dept || !mail || !phone) {
+                document.getElementById('start-error').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('start-screen').classList.add('hidden');
+            renderQuiz();
+            document.getElementById('quiz-screen').classList.remove('hidden');
+        });
+
+        function renderQuiz() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            questions.forEach((qObj, qIndex) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const qTitle = document.createElement('div');
+                qTitle.style.marginBottom = '15px';
+                qTitle.style.fontSize = '1.2rem';
+                qTitle.style.lineHeight = '1.5';
+                qTitle.innerHTML = `<span style="color: var(--primary);">[${qIndex + 1}]</span> ${qObj.q}`;
+                card.appendChild(qTitle);
+
+                qObj.opts.forEach((opt, oIndex) => {
+                    const label = document.createElement('label');
+                    label.className = 'option';
+
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `q_${qIndex}`;
+                    input.value = oIndex;
+
+                    input.addEventListener('change', () => {
+                        userAnswers[qIndex] = oIndex;
+                        const siblings = card.querySelectorAll('.option');
+                        siblings.forEach(s => s.classList.remove('selected'));
+                        label.classList.add('selected');
+                    });
+
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(` > ${opt}`));
+                    card.appendChild(label);
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            if (userAnswers.includes(null)) {
+                document.getElementById('submit-error').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('submit-error').classList.add('hidden');
+
+            let score = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans == questions[i].ans) score++;
+            });
+
+            const name = document.getElementById('name').value.trim();
+            const college = document.getElementById('college').value.trim();
+            const dept = document.getElementById('dept').value.trim();
+            const mail = document.getElementById('mail').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('submit-loader').classList.remove('hidden');
+
+            try {
+                if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `action=submitScore&name=${encodeURIComponent(name)}&college=${encodeURIComponent(college)}&dept=${encodeURIComponent(dept)}&mail=${encodeURIComponent(mail)}&phone=${encodeURIComponent(phone)}&score=${score}&total=${questions.length}`
+                    });
+                }
+            } catch (e) {
+                // Because Apps Script POST redirects, a CORS error occurs on the UI layer, 
+                // but the payload is still delivered to Google Sheets!
+                console.log("POST request completed (ignoring CORS opaque response).");
+            }
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('res-name').textContent = name;
+            document.getElementById('res-score').textContent = score;
+            document.getElementById('res-total').textContent = questions.length;
+            document.getElementById('result-screen').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+
+        init();
+    </script>
+</body>
+
+</html>
