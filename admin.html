@@ -242,6 +242,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -269,21 +270,35 @@
 
         <!-- Scores Tab -->
         <div id="tab-scores">
+            <!-- Chart Card -->
+            <div class="card"
+                style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                <h3 style="align-self: flex-start; margin-bottom: 5px;">> Programming Language Statistics</h3>
+                <p style="align-self: flex-start; color: var(--muted); font-size: 0.9em; margin-bottom: 20px;">Analyzing
+                    test composition by active programming languages.</p>
+                <div style="width: 100%; max-width: 350px;">
+                    <canvas id="langChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Leaderboard Card -->
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>> Global Leaderboard</h3>
-                    <button onclick="loadScores()" class="primary" style="padding: 6px 12px; font-size: 14px;">SYNC
-                        SCORES</button>
+                    <h3>> TOP 20 QUALIFIERS (ROUND 1)</h3>
+                    <div>
+                        <button onclick="exportToCSV()" class="primary"
+                            style="padding: 6px 12px; font-size: 14px; margin-right: 10px;">EXPORT EXCEL</button>
+                        <button onclick="loadScores()" class="primary" style="padding: 6px 12px; font-size: 14px;">SYNC
+                            SCORES</button>
+                    </div>
                 </div>
                 <div style="overflow-x: auto;">
                     <table id="scores-table">
                         <thead>
                             <tr>
-                                <th>S No</th>
+                                <th>Rank</th>
                                 <th>Name</th>
                                 <th>College</th>
-                                <th>Dept</th>
-                                <th>Mail</th>
                                 <th>Phone</th>
                                 <th>Result</th>
                             </tr>
@@ -304,6 +319,7 @@
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
                 loadScores();
+                loadChart();
             } else {
                 alert('ACCESS DENIED: Invalid Security Key');
             }
@@ -328,12 +344,80 @@
                     return;
                 }
 
-                data.scores.forEach((s) => {
-                    tbody.innerHTML += "<tr><td style='color:var(--primary); font-weight:bold;'>" + escapeHTML(String(s.sno)) + "</td><td>" + escapeHTML(String(s.name)) + "</td><td>" + escapeHTML(String(s.college)) + "</td><td>" + escapeHTML(String(s.dept)) + "</td><td>" + escapeHTML(String(s.mail)) + "</td><td>" + escapeHTML(String(s.phone)) + "</td><td style='font-size: 1.1em;'><span style='color:var(--primary);'>" + escapeHTML(String(s.result)) + "</span></td></tr>";
+                let parsedScores = data.scores.map(s => {
+                    let scoreVal = parseInt(String(s.result).split('/')[0]) || 0;
+                    return { ...s, scoreVal };
+                });
+
+                parsedScores.sort((a, b) => b.scoreVal - a.scoreVal);
+                parsedScores = parsedScores.slice(0, 20);
+
+                parsedScores.forEach((s, i) => {
+                    tbody.innerHTML += "<tr><td style='color:var(--primary); font-weight:bold;'>" + (i + 1) + "</td><td>" + escapeHTML(String(s.name)) + "</td><td>" + escapeHTML(String(s.college)) + "</td><td>" + escapeHTML(String(s.phone)) + "</td><td style='font-size: 1.1em;'><span style='color:var(--primary);'>" + escapeHTML(String(s.result)) + "</span></td></tr>";
                 });
             } catch (e) {
                 tbody.innerHTML = '<tr><td colspan="5" style="color:#ef4444;">Failed to sync scores.</td></tr>';
             }
+        }
+
+        function exportToCSV() {
+            const table = document.getElementById("scores-table");
+            let csv = [];
+            for (let i = 0; i < table.rows.length; i++) {
+                let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++)
+                    row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                csv.push(row.join(","));
+            }
+            let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            let downloadLink = document.createElement("a");
+            downloadLink.download = "FTG_Round_1_Results.csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        let chartInstance = null;
+        async function loadChart() {
+            try {
+                const res = await fetch(SCRIPT_URL + '?action=getQuestions');
+                const data = await res.json();
+
+                if (!data.questions) return;
+
+                const langCounts = {};
+                data.questions.forEach(q => {
+                    const topic = q.title || 'General';
+                    langCounts[topic] = (langCounts[topic] || 0) + 1;
+                });
+
+                const ctx = document.getElementById('langChart').getContext('2d');
+                if (chartInstance) chartInstance.destroy();
+
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(langCounts),
+                        datasets: [{
+                            data: Object.values(langCounts),
+                            backgroundColor: ['#3b82f6', '#22c55e', '#eab308', '#ef4444', '#a855f7'],
+                            borderColor: '#18181b',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: '#f4f4f5', font: { family: "'Share Tech Mono', monospace" } }
+                            }
+                        }
+                    }
+                });
+            } catch (e) { console.error('Error loading chart:', e); }
         }
     </script>
 </body>
