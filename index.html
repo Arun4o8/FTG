@@ -277,6 +277,14 @@
             <div class="loader"></div>
         </div>
 
+        <!-- Landing Screen -->
+        <div id="landing-screen" class="hidden card" style="text-align: center;">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">> SECURE_TEST_ENVIRONMENT</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">Please enter full-screen mode to access the
+                participant initialization form and proceed to the test.</p>
+            <button class="btn" id="enter-fullscreen-btn">ENTER_FULLSCREEN_MODE</button>
+        </div>
+
         <!-- Start Screen -->
         <div id="start-screen" class="hidden">
             <div class="card">
@@ -407,7 +415,7 @@
                 const data = await res.json();
 
                 document.getElementById('loading').classList.add('hidden');
-                document.getElementById('start-screen').classList.remove('hidden');
+                document.getElementById('landing-screen').classList.remove('hidden');
 
                 if (data && data.questions && data.questions.length > 0) {
                     questions = data.questions;
@@ -423,12 +431,18 @@
             } catch (e) {
                 console.warn("Connection or URL failed. Defaulting to local fallback questions.");
                 document.getElementById('loading').classList.add('hidden');
-                document.getElementById('start-screen').classList.remove('hidden');
+                document.getElementById('landing-screen').classList.remove('hidden');
                 questions = fallbackQuestions;
                 shuffleArray(questions);
                 userAnswers = new Array(questions.length).fill(null);
             }
         }
+
+        document.getElementById('enter-fullscreen-btn').addEventListener('click', () => {
+            requestFullscreen();
+            document.getElementById('landing-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        });
 
         document.getElementById('start-btn').addEventListener('click', () => {
             const name = document.getElementById('name').value.trim();
@@ -442,7 +456,9 @@
                 return;
             }
 
-            requestFullscreen();
+            if (!document.fullscreenElement) {
+                requestFullscreen();
+            }
 
             document.getElementById('start-screen').classList.add('hidden');
             renderQuiz();
@@ -467,9 +483,16 @@
 
         // Desk Lock security features
         document.addEventListener("fullscreenchange", () => {
-            if (isDeskLocked && !document.fullscreenElement) {
-                alert(">> SECURITY_BREACH: Fullscreen termination detected. Auto-submitting to terminal...");
-                submitQuiz(true);
+            if (!document.fullscreenElement) {
+                if (isDeskLocked) {
+                    alert(">> SECURITY_BREACH: Fullscreen termination detected. Auto-submitting to terminal...");
+                    submitQuiz(true);
+                } else if (!document.getElementById('start-screen').classList.contains('hidden')) {
+                    // If they exit fullscreen while filling out their info before the test
+                    document.getElementById('start-screen').classList.add('hidden');
+                    document.getElementById('landing-screen').classList.remove('hidden');
+                    alert(">> COMPLIANCE_ERROR: Full-screen mode is strictly required to proceed.");
+                }
             }
         });
 
@@ -485,9 +508,15 @@
             if (isDeskLocked) event.preventDefault();
         });
 
-        // Block Refresh, DevTools, Copy-Paste, and Back/Forward shortcuts
+        // Block Refresh, DevTools, Copy-Paste, Back/Forward shortcuts, and Escape
         document.addEventListener('keydown', (e) => {
             if (isDeskLocked) {
+                // Trap ESCAPE explicitly
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    e.preventDefault();
+                    return false;
+                }
+
                 // F5, Ctrl+R, F12, Ctrl+Shift+I
                 if (e.key === 'F5' || (e.ctrlKey && e.key.toLowerCase() === 'r') || e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i')) {
                     e.preventDefault();
