@@ -323,12 +323,21 @@
             <div id="timer-display" class="hacker-timer">
                 [ T-MINUS: 30:00 ]
             </div>
+
+            <h2 id="category-title" class="card"
+                style="color: #eab308; margin-bottom: 20px; text-transform: uppercase;"></h2>
             <div id="questions-container"></div>
-            <div class="card">
-                <button class="btn" id="submit-btn" style="margin-top: 10px;">EXECUTE_COMPILE();</button>
-                <p id="submit-error" style="color: #ef4444; margin-top: 10px;" class="hidden">Error: Unanswered
-                    variables found in sequence.</p>
-                <div id="submit-loader" class="loader hidden"></div>
+
+            <div class="card" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn hidden" id="prev-btn" style="flex: 1;">&lt; PREVIOUS_PHASE</button>
+                <button class="btn" id="next-btn" style="flex: 1;">NEXT_PHASE &gt;</button>
+                <button class="btn hidden" id="submit-btn" style="flex: 1;">EXECUTE_COMPILE();</button>
+                <p id="submit-error" style="color: #ef4444; margin-top: 10px; width: 100%; text-align: center;"
+                    class="hidden">Error: Unanswered variables found in sequence.</p>
+                <div id="submit-loader" class="hidden"
+                    style="width: 100%; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 1.2rem; color: #0ff; text-shadow: 0 0 5px #0ff; padding: 15px;">
+                    > UPLOADING_PAYLOAD: <span id="progress-bar">[..........]</span>
+                </div>
             </div>
         </div>
 
@@ -379,28 +388,87 @@
         let userAnswers = [];
         let timerInterval;
         let isDeskLocked = false;
+        let uniqueCategories = [];
+        let currentCategoryIndex = 0;
 
         // Hardcoded questions. If you don't want to use Google Sheets for questions, 
         // you can just type your questions right here in the code!
         const fallbackQuestions = [
-            {
-                title: "HTML Foundation",
-                q: "What does HTML stand for?",
-                opts: ["Hyper Text Preprocessor", "Hyper Text Markup Language", "Hyper Multiple Language", "Hyper Tool Multi Language"],
-                ans: 1
-            },
-            {
-                title: "JavaScript",
-                q: "Spot the Glitch:\n<pre><code>let x = 10;\nconst y = 20;\nx = y;\ny = x; // GLITCH?</code></pre>",
-                opts: ["let x=10 syntax error", "const variable cannot be reassigned", "x = y is invalid", "Code executes fine"],
-                ans: 1
-            },
-            {
-                title: "JavaScript",
-                q: "What will `console.log(typeof null)` output in JavaScript?",
-                opts: ["null", "undefined", "object", "string"],
-                ans: 2
-            }
+            { "title": "Python", "q": "Who created Python?", "opts": ["Dennis Ritchie", "Guido van Rossum", "James Gosling", "Bjarne Stroustrup"], "ans": 1 },
+            { "title": "Python", "q": "Which keyword is used to define a function in Python?", "opts": ["function", "define", "def", "fun"], "ans": 2 },
+            { "title": "Python", "q": "Which of the following is a mutable data type?", "opts": ["tuple", "string", "list", "int"], "ans": 2 },
+            { "title": "Python", "q": "What is the output? print(type(5))", "opts": ["int", "<class 'int'>", "integer", "type int"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nx = [1,2,3]\nprint(x * 2)", "opts": ["[2,4,6]", "[1,2,3,1,2,3]", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "Which method is used to add an element to a list?", "opts": ["add()", "insert()", "append()", "push()"], "ans": 2 },
+            { "title": "Python", "q": "What is the output?\nprint(\"5\" + \"3\")", "opts": ["8", "53", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What happens here?\nx = (1,2,[3,4])\nx[2].append(5)\nprint(x)", "opts": ["Error", "(1,2,[3,4])", "(1,2,[3,4,5])", "None"], "ans": 2 },
+            { "title": "Python", "q": "What is the output?\ndef func(x=[]):\n    x.append(1)\n    return x\nprint(func())\nprint(func())", "opts": ["[1] and [1]", "[1] and [1,1]", "Error", "[] and [1]"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\na = [1,2,3]\nb = a\na += [4]\nprint(b)", "opts": ["[1,2,3]", "[1,2,3,4]", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What will be printed?\nprint(bool([]))", "opts": ["True", "False", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\na = \"Python\"\nprint(a[1:4])", "opts": ["Pyt", "yth", "tho", "Error"], "ans": 1 },
+            { "title": "Python", "q": "Which statement is used for exception handling?", "opts": ["try-except", "try-catch", "catch", "handle"], "ans": 0 },
+            { "title": "Python", "q": "What is the output?\nx = 5\ndef func():\n    x = 10\nfunc()\nprint(x)", "opts": ["10", "5", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nprint(2 ** 4)", "opts": ["8", "16", "6", "4"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nprint(0.1 + 0.2 == 0.3)", "opts": ["True", "False", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nprint({True: \"yes\", 1: \"no\", 1.0: \"maybe\"})", "opts": ["{True:'yes',1:'no',1.0:'maybe'}", "{True:'maybe'}", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nfor i in range(3):\n    def f():\n        return i\nprint(f())", "opts": ["0", "1", "2", "Error"], "ans": 2 },
+            { "title": "Python", "q": "What is the output?\nprint(list(filter(None, [0, 1, False, True, \"\", \"Python\"])))", "opts": ["[0, False, \"\"]", "[1, True, \"Python\"]", "All values", "Error"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\na = [1,2,3]\nb = a[:]\nprint(a is b)", "opts": ["True", "False", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nx = [1, 2, 3]\nprint(x[-1])", "opts": ["1", "2", "3", "Error"], "ans": 2 },
+            { "title": "Python", "q": "What does len({\"a\":1, \"b\":2}) return?", "opts": ["1", "2", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "Which keyword is used to create a class in Python?", "opts": ["struct", "object", "class", "define"], "ans": 2 },
+            { "title": "Python", "q": "What is the output?\nprint(10 // 3)", "opts": ["3.33", "3", "4", "Error"], "ans": 1 },
+            { "title": "Python", "q": "Which data type is unordered?", "opts": ["list", "tuple", "set", "string"], "ans": 2 },
+            { "title": "Python", "q": "What is the output?\nprint(bool(\"False\"))", "opts": ["False", "True", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What does break do in a loop?", "opts": ["Skips iteration", "Stops loop", "Restarts loop", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nx = {1,2,3}\nx.add(2)\nprint(len(x))", "opts": ["4", "3", "Error", "2"], "ans": 1 },
+            { "title": "Python", "q": "Which function converts string to integer?", "opts": ["str()", "float()", "int()", "chr()"], "ans": 2 },
+            { "title": "Python", "q": "What is the output?\nprint(\"Hello\".lower())", "opts": ["HELLO", "hello", "Hello", "Error"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\na = [1,2,3]\nprint(sum(a))", "opts": ["6", "5", "Error", "None"], "ans": 0 },
+            { "title": "Python", "q": "Which operator checks identity?", "opts": ["==", "is", "equals", "!="], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nprint(type({}))", "opts": ["list", "dict", "set", "tuple"], "ans": 1 },
+            { "title": "Python", "q": "Which keyword is used to handle errors?", "opts": ["catch", "try", "handle", "error"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nprint(\"Python\"[::-1])", "opts": ["Python", "nohtyP", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nprint(3 * \"ab\")", "opts": ["ababab", "ab3", "Error", "None"], "ans": 0 },
+            { "title": "Python", "q": "Which function reads input from user?", "opts": ["scan()", "input()", "read()", "get()"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nprint(5 > 3 and 2 < 1)", "opts": ["True", "False", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "What is the output?\nx = [1,2]\ny = x.copy()\nprint(x is y)", "opts": ["True", "False", "Error", "None"], "ans": 1 },
+            { "title": "Python", "q": "Which keyword skips current iteration?", "opts": ["pass", "continue", "break", "skip"], "ans": 1 },
+
+            // Dummy Java Questions
+            { "title": "Java", "q": "What is Java?", "opts": ["Language", "Coffee", "OS", "DB"], "ans": 0 },
+            { "title": "Java", "q": "Java is short for Javascript?", "opts": ["True", "False", "Maybe", "Depends"], "ans": 1 },
+            { "title": "Java", "q": "Which is a valid keyword?", "opts": ["interface", "include", "def", "fun"], "ans": 0 },
+            { "title": "Java", "q": "How to print in Java?", "opts": ["print()", "console.log()", "System.out.println()", "echo"], "ans": 2 },
+            { "title": "Java", "q": "Java is platform independent?", "opts": ["Yes", "No", "Only on Windows", "Only on Mac"], "ans": 0 },
+
+            // Dummy C Questions
+            { "title": "C", "q": "Who invented C?", "opts": ["Dennis Ritchie", "Guido", "James", "Bjarne"], "ans": 0 },
+            { "title": "C", "q": "What is the file extension?", "opts": [".c", ".cpp", ".py", ".java"], "ans": 0 },
+            { "title": "C", "q": "Is C object oriented?", "opts": ["Yes", "No", "Partially", "None"], "ans": 1 },
+            { "title": "C", "q": "Which function is used for output?", "opts": ["printf()", "cout", "print", "System.out"], "ans": 0 },
+            { "title": "C", "q": "Which symbol is used for memory address?", "opts": ["&", "*", "#", "$"], "ans": 0 },
+
+            // Dummy HTML Questions
+            { "title": "Html", "q": "What does HTML stand for?", "opts": ["Hyper Text Markup Language", "Hyperlinks", "Home Tool", "None"], "ans": 0 },
+            { "title": "Html", "q": "Which tag for largest heading?", "opts": ["<h1>", "<heading>", "<h6>", "<head>"], "ans": 0 },
+            { "title": "Html", "q": "Which tag for line break?", "opts": ["<br>", "<break>", "<lb>", "<b>"], "ans": 0 },
+            { "title": "Html", "q": "How to make text bold?", "opts": ["<b>", "<bold>", "<strong>", "Both 1 and 3"], "ans": 3 },
+            { "title": "Html", "q": "Which tag for image?", "opts": ["<img>", "<image>", "<pic>", "<src>"], "ans": 0 },
+
+            // Dummy Sql Questions
+            { "title": "Sql", "q": "What does SQL stand for?", "opts": ["Structured Query Language", "Strong Question Language", "System Query", "None"], "ans": 0 },
+            { "title": "Sql", "q": "Which statement to extract data?", "opts": ["SELECT", "GET", "EXTRACT", "OPEN"], "ans": 0 },
+            { "title": "Sql", "q": "Which statement to update data?", "opts": ["UPDATE", "SAVE", "MODIFY", "CHANGE"], "ans": 0 },
+            { "title": "Sql", "q": "Which statement to delete data?", "opts": ["DELETE", "REMOVE", "DROP", "CLEAR"], "ans": 0 },
+            { "title": "Sql", "q": "Which statement to insert data?", "opts": ["INSERT INTO", "ADD TO", "PUT", "SAVE"], "ans": 0 },
+
+            // Dummy JS Questions
+            { "title": "JavaScript", "q": "Which operator is used to assign a value?", "opts": ["*", "-", "=", "x"], "ans": 2 },
+            { "title": "JavaScript", "q": "Inside which HTML element do we put JavaScript?", "opts": ["<js>", "<scripting>", "<script>", "<javascript>"], "ans": 2 },
+            { "title": "JavaScript", "q": "How to write a comment?", "opts": ["<!-- -->", "//", "**", "##"], "ans": 1 },
+            { "title": "JavaScript", "q": "How do you declare a variable?", "opts": ["v", "variable", "var", "val"], "ans": 2 },
+            { "title": "JavaScript", "q": "Which event occurs when a user clicks on an HTML element?", "opts": ["onmouseclick", "onclick", "onchange", "onmouseover"], "ans": 1 }
         ];
 
         function shuffleArray(array) {
@@ -417,27 +485,72 @@
                 const res = await fetch(SCRIPT_URL + '?action=getQuestions');
                 const data = await res.json();
 
+                let baseQuestions = (data && data.questions && data.questions.length > 0) ? data.questions : fallbackQuestions;
+
+                let categoriesMap = {};
+                baseQuestions.forEach(q => {
+                    let cat = q.title || 'General';
+                    if (!categoriesMap[cat]) categoriesMap[cat] = [];
+                    categoriesMap[cat].push(q);
+                });
+
+                let selectedQuestions = [];
+                // Round 1 Distribution Requirements Layout
+                const quota = { "Python": 10, "Java": 5, "C": 5, "Html": 5, "Sql": 3, "JavaScript": 2 };
+
+                // Enforce STRICT category testing order
+                const strictOrder = ["Python", "Java", "C", "Html", "Sql", "JavaScript"];
+                uniqueCategories = [];
+                currentCategoryIndex = 0;
+
+                strictOrder.forEach(cat => {
+                    if (categoriesMap[cat] && categoriesMap[cat].length > 0) {
+                        uniqueCategories.push(cat);
+                        let required = quota[cat] || 5;
+                        let catArray = categoriesMap[cat];
+                        shuffleArray(catArray);
+                        selectedQuestions.push(...catArray.slice(0, required));
+                    }
+                });
+
+                questions = selectedQuestions;
+                userAnswers = new Array(questions.length).fill(null);
+
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('landing-screen').classList.remove('hidden');
 
-                if (data && data.questions && data.questions.length > 0) {
-                    questions = data.questions;
-                    shuffleArray(questions);
-                    userAnswers = new Array(questions.length).fill(null);
-                } else {
-                    // Fall back to hardcoded questions
-                    console.warn("No questions in database. Using local fallback.");
-                    questions = fallbackQuestions;
-                    shuffleArray(questions);
-                    userAnswers = new Array(questions.length).fill(null);
-                }
             } catch (e) {
-                console.warn("Connection or URL failed. Defaulting to local fallback questions.");
+                console.warn("Error bootstrapping questions. Fallback loaded.");
+
+                let categoriesMap = {};
+                fallbackQuestions.forEach(q => {
+                    let cat = q.title || 'General';
+                    if (!categoriesMap[cat]) categoriesMap[cat] = [];
+                    categoriesMap[cat].push(q);
+                });
+
+                let selectedQuestions = [];
+                const quota = { "Python": 10, "Java": 5, "C": 5, "Html": 5, "Sql": 3, "JavaScript": 2 };
+
+                const strictOrder = ["Python", "Java", "C", "Html", "Sql", "JavaScript"];
+                uniqueCategories = [];
+                currentCategoryIndex = 0;
+
+                strictOrder.forEach(cat => {
+                    if (categoriesMap[cat] && categoriesMap[cat].length > 0) {
+                        uniqueCategories.push(cat);
+                        let required = quota[cat] || 5;
+                        let catArray = categoriesMap[cat];
+                        shuffleArray(catArray);
+                        selectedQuestions.push(...catArray.slice(0, required));
+                    }
+                });
+
+                questions = selectedQuestions;
+                userAnswers = new Array(questions.length).fill(null);
+
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('landing-screen').classList.remove('hidden');
-                questions = fallbackQuestions;
-                shuffleArray(questions);
-                userAnswers = new Array(questions.length).fill(null);
             }
         }
 
@@ -585,7 +698,16 @@
             const container = document.getElementById('questions-container');
             container.innerHTML = '';
 
+            if (uniqueCategories.length === 0) return;
+
+            const currentCat = uniqueCategories[currentCategoryIndex];
+            document.getElementById('category-title').textContent = `> SECTION: ${currentCat}`;
+
+            let absoluteIndex = 0; // Tracks the visual question number internally per category if needed, but we keep the global mapping.
+
             questions.forEach((qObj, qIndex) => {
+                if ((qObj.title || 'General') !== currentCat) return;
+
                 const card = document.createElement('div');
                 card.className = 'card';
 
@@ -593,8 +715,10 @@
                 qTitle.style.marginBottom = '15px';
                 qTitle.style.fontSize = '1.2rem';
                 qTitle.style.lineHeight = '1.5';
-                qTitle.innerHTML = `<span style="color: var(--primary);">[${qIndex + 1}]</span> <span style="color: #eab308; font-size: 0.9em;">[${qObj.title || 'General'}]</span> <br><br> ${qObj.q}`;
+                qTitle.innerHTML = `<span style="color: var(--primary);">[Q${absoluteIndex + 1}]</span> <br><br> ${qObj.q}`;
                 card.appendChild(qTitle);
+
+                absoluteIndex++;
 
                 qObj.opts.forEach((opt, oIndex) => {
                     const label = document.createElement('label');
@@ -602,8 +726,14 @@
 
                     const input = document.createElement('input');
                     input.type = 'radio';
-                    input.name = `q_${qIndex}`;
+                    input.name = `q_${qIndex}`; // Safe: links direct absolute pos
                     input.value = oIndex;
+
+                    // Recover answered state when navigating back and forth!
+                    if (userAnswers[qIndex] === oIndex) {
+                        input.checked = true;
+                        label.classList.add('selected');
+                    }
 
                     input.addEventListener('change', () => {
                         userAnswers[qIndex] = oIndex;
@@ -619,7 +749,30 @@
 
                 container.appendChild(card);
             });
+
+            // Render Pagination Logic
+            document.getElementById('prev-btn').classList.toggle('hidden', currentCategoryIndex === 0);
+
+            if (currentCategoryIndex < uniqueCategories.length - 1) {
+                document.getElementById('next-btn').classList.remove('hidden');
+                document.getElementById('submit-btn').classList.add('hidden');
+            } else {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
+            }
         }
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            currentCategoryIndex++;
+            renderQuiz();
+            window.scrollTo(0, 0);
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            currentCategoryIndex--;
+            renderQuiz();
+            window.scrollTo(0, 0);
+        });
 
         document.getElementById('submit-btn').addEventListener('click', () => {
             submitQuiz(false);
@@ -647,7 +800,19 @@
             const phone = document.getElementById('phone').value.trim();
 
             document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('prev-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            // New animated loader
             document.getElementById('submit-loader').classList.remove('hidden');
+            let progressSpan = document.getElementById('progress-bar');
+            let dots = 0;
+            let loadingAnim = setInterval(() => {
+                dots++;
+                let filled = Array(Math.min(dots, 10)).fill('#').join('');
+                let empty = Array(Math.max(10 - dots, 0)).fill('.').join('');
+                progressSpan.textContent = `[${filled}${empty}]`;
+            }, 100);
 
             try {
                 if (SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
@@ -662,6 +827,8 @@
                 // but the payload is still delivered to Google Sheets!
                 console.log("POST request completed (ignoring CORS opaque response).");
             }
+
+            clearInterval(loadingAnim);
 
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('res-name').textContent = name;
