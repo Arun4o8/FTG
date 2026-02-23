@@ -280,6 +280,9 @@
         <!-- Landing Screen -->
         <div id="landing-screen" class="hidden card" style="text-align: center;">
             <h2 style="color: var(--primary); margin-bottom: 20px;">> SECURE_TEST_ENVIRONMENT</h2>
+            <p id="landing-error"
+                style="color: #ef4444; margin-bottom: 15px; font-weight: bold; border: 1px solid #ef4444; padding: 10px; border-radius: 4px;"
+                class="hidden"></p>
             <p style="margin-bottom: 20px; color: var(--text-muted);">Please enter full-screen mode to access the
                 participant initialization form and proceed to the test.</p>
             <button class="btn" id="enter-fullscreen-btn">ENTER_FULLSCREEN_MODE</button>
@@ -440,8 +443,13 @@
 
         document.getElementById('enter-fullscreen-btn').addEventListener('click', () => {
             requestFullscreen();
+            document.getElementById('landing-error').classList.add('hidden');
             document.getElementById('landing-screen').classList.add('hidden');
-            document.getElementById('start-screen').classList.remove('hidden');
+            if (isDeskLocked) {
+                document.getElementById('quiz-screen').classList.remove('hidden');
+            } else {
+                document.getElementById('start-screen').classList.remove('hidden');
+            }
         });
 
         document.getElementById('start-btn').addEventListener('click', () => {
@@ -484,22 +492,33 @@
         // Desk Lock security features
         document.addEventListener("fullscreenchange", () => {
             if (!document.fullscreenElement) {
-                if (isDeskLocked) {
-                    alert(">> SECURITY_BREACH: Fullscreen termination detected. Auto-submitting to terminal...");
-                    submitQuiz(true);
+                if (isDeskLocked && !document.getElementById('quiz-screen').classList.contains('hidden')) {
+                    document.getElementById('quiz-screen').classList.add('hidden');
+                    document.getElementById('landing-screen').classList.remove('hidden');
+
+                    const errElem = document.getElementById('landing-error');
+                    errElem.textContent = ">> COMPLIANCE_ERROR: Full-screen mode exited. You must return to full-screen to continue the test. Timer is still running.";
+                    errElem.classList.remove('hidden');
                 } else if (!document.getElementById('start-screen').classList.contains('hidden')) {
                     // If they exit fullscreen while filling out their info before the test
                     document.getElementById('start-screen').classList.add('hidden');
                     document.getElementById('landing-screen').classList.remove('hidden');
-                    alert(">> COMPLIANCE_ERROR: Full-screen mode is strictly required to proceed.");
+
+                    const errElem = document.getElementById('landing-error');
+                    errElem.textContent = ">> COMPLIANCE_ERROR: Full-screen mode is strictly required to proceed.";
+                    errElem.classList.remove('hidden');
                 }
             }
         });
 
         window.addEventListener("blur", () => {
-            if (isDeskLocked) {
-                alert(">> SECURITY_BREACH: Window focus lost. Terminating process and auto-submitting...");
-                submitQuiz(true);
+            if (isDeskLocked && !document.getElementById('quiz-screen').classList.contains('hidden')) {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('landing-screen').classList.remove('hidden');
+
+                const errElem = document.getElementById('landing-error');
+                errElem.textContent = ">> COMPLIANCE_ERROR: Window focus lost. You must return to full-screen to continue the test. Timer is still running.";
+                errElem.classList.remove('hidden');
             }
         });
 
