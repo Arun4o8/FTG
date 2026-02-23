@@ -28,6 +28,8 @@
             color: var(--text);
             font-family: 'Share Tech Mono', monospace;
             padding: 20px;
+            user-select: none;
+            /* Prevent text selection */
         }
 
         .container {
@@ -163,10 +165,109 @@
                 transform: rotate(360deg);
             }
         }
+
+        .hacker-timer {
+            position: fixed;
+            top: 70px;
+            right: 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--primary);
+            padding: 10px 15px;
+            z-index: 1000;
+            box-shadow: 0 0 10px var(--primary-glow);
+            text-shadow: 0 0 5px var(--primary);
+            font-family: 'Share Tech Mono', monospace;
+            border-radius: 4px;
+        }
+
+        /* FTG Glitch Effect */
+        .ftg-logo {
+            position: fixed;
+            top: 20px;
+            right: 25px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            z-index: 9999;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary-glow);
+            user-select: none;
+            cursor: default;
+        }
+
+        .ftg-logo::before,
+        .ftg-logo::after {
+            content: "FTG";
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.8;
+        }
+
+        .ftg-logo::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-anim-1 0.2s infinite linear alternate-reverse;
+        }
+
+        .ftg-logo::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% {
+                transform: translate(0)
+            }
+
+            25% {
+                transform: translate(-2px, 1px)
+            }
+
+            50% {
+                transform: translate(-1px, -1px)
+            }
+
+            75% {
+                transform: translate(2px, 1px)
+            }
+
+            100% {
+                transform: translate(1px, -1px)
+            }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% {
+                transform: translate(0)
+            }
+
+            25% {
+                transform: translate(2px, -1px)
+            }
+
+            50% {
+                transform: translate(1px, 1px)
+            }
+
+            75% {
+                transform: translate(-2px, -1px)
+            }
+
+            100% {
+                transform: translate(-1px, 1px)
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- FTG Logo with Glitch Effect -->
+    <div class="ftg-logo" title="Fix The Glitch">FTG</div>
     <div class="container">
         <h1 class="glitch-title">FIX_THE_GLITCH();</h1>
 
@@ -208,6 +309,9 @@
 
         <!-- Quiz Screen -->
         <div id="quiz-screen" class="hidden">
+            <div id="timer-display" class="hacker-timer">
+                [ T-MINUS: 30:00 ]
+            </div>
             <div id="questions-container"></div>
             <div class="card">
                 <button class="btn" id="submit-btn" style="margin-top: 10px;">EXECUTE_COMPILE();</button>
@@ -224,11 +328,36 @@
             <div style="font-size: 1.5rem; margin-bottom: 10px;">
                 Participant: <span id="res-name" style="color: var(--primary);"></span>
             </div>
-            <div
-                style="font-size: 3.5rem; margin: 20px 0; color: var(--primary); text-shadow: 0 0 15px var(--primary-glow);">
+            <!-- Score hidden per admin request -->
+            <div class="hidden">
                 <span id="res-score"></span> / <span id="res-total"></span>
             </div>
+            <p style="color: var(--primary); font-size: 1.2rem; margin: 20px 0;">> TEST_SUBMITTED_SUCCESSFULLY</p>
             <p style="color: var(--text-muted);">> Data successfully pushed to admin terminal.</p>
+        </div>
+
+        <!-- Global Scores Screen -->
+        <div id="scores-screen" class="hidden card">
+            <h2 style="color: var(--primary); text-align: center; margin-bottom: 20px;">> GLOBAL_LEADERBOARD</h2>
+            <div style="overflow-x: auto;">
+                <table id="public-scores-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th
+                                style="padding: 10px; border-bottom: 1px solid var(--border); color: var(--primary); text-align: left;">
+                                Rank</th>
+                            <th
+                                style="padding: 10px; border-bottom: 1px solid var(--border); color: var(--primary); text-align: left;">
+                                Name</th>
+                            <th
+                                style="padding: 10px; border-bottom: 1px solid var(--border); color: var(--primary); text-align: left;">
+                                Score</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <button class="btn" style="margin-top: 20px;" onclick="closeScores()">RETURN</button>
         </div>
     </div>
 
@@ -237,26 +366,38 @@
 
         let questions = [];
         let userAnswers = [];
+        let timerInterval;
+        let isDeskLocked = false;
 
         // Hardcoded questions. If you don't want to use Google Sheets for questions, 
         // you can just type your questions right here in the code!
         const fallbackQuestions = [
             {
+                title: "HTML Foundation",
                 q: "What does HTML stand for?",
                 opts: ["Hyper Text Preprocessor", "Hyper Text Markup Language", "Hyper Multiple Language", "Hyper Tool Multi Language"],
                 ans: 1
             },
             {
+                title: "JavaScript",
                 q: "Spot the Glitch:\n<pre><code>let x = 10;\nconst y = 20;\nx = y;\ny = x; // GLITCH?</code></pre>",
                 opts: ["let x=10 syntax error", "const variable cannot be reassigned", "x = y is invalid", "Code executes fine"],
                 ans: 1
             },
             {
+                title: "JavaScript",
                 q: "What will `console.log(typeof null)` output in JavaScript?",
                 opts: ["null", "undefined", "object", "string"],
                 ans: 2
             }
         ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
         async function init() {
             try {
@@ -270,11 +411,13 @@
 
                 if (data && data.questions && data.questions.length > 0) {
                     questions = data.questions;
+                    shuffleArray(questions);
                     userAnswers = new Array(questions.length).fill(null);
                 } else {
                     // Fall back to hardcoded questions
                     console.warn("No questions in database. Using local fallback.");
                     questions = fallbackQuestions;
+                    shuffleArray(questions);
                     userAnswers = new Array(questions.length).fill(null);
                 }
             } catch (e) {
@@ -282,6 +425,7 @@
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('start-screen').classList.remove('hidden');
                 questions = fallbackQuestions;
+                shuffleArray(questions);
                 userAnswers = new Array(questions.length).fill(null);
             }
         }
@@ -298,10 +442,96 @@
                 return;
             }
 
+            requestFullscreen();
+
             document.getElementById('start-screen').classList.add('hidden');
             renderQuiz();
+            startTimer();
             document.getElementById('quiz-screen').classList.remove('hidden');
+
+            setTimeout(() => { isDeskLocked = true; }, 1000); // Activate desk lock
         });
+
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => console.log(err));
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        // Desk Lock security features
+        document.addEventListener("fullscreenchange", () => {
+            if (isDeskLocked && !document.fullscreenElement) {
+                alert(">> SECURITY_BREACH: Fullscreen termination detected. Auto-submitting to terminal...");
+                submitQuiz(true);
+            }
+        });
+
+        window.addEventListener("blur", () => {
+            if (isDeskLocked) {
+                alert(">> SECURITY_BREACH: Window focus lost. Terminating process and auto-submitting...");
+                submitQuiz(true);
+            }
+        });
+
+        // Block Right-Click Context Menu
+        document.addEventListener('contextmenu', event => {
+            if (isDeskLocked) event.preventDefault();
+        });
+
+        // Block Refresh, DevTools, Copy-Paste, and Back/Forward shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (isDeskLocked) {
+                // F5, Ctrl+R, F12, Ctrl+Shift+I
+                if (e.key === 'F5' || (e.ctrlKey && e.key.toLowerCase() === 'r') || e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i')) {
+                    e.preventDefault();
+                }
+                // Alt+Left / Alt+Right
+                if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                    e.preventDefault();
+                }
+                // Ctrl+C, Ctrl+V, Ctrl+U (View Source)
+                if (e.ctrlKey && (e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'v' || e.key.toLowerCase() === 'u')) {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        function startTimer() {
+            let timeLeft = 30 * 60; // 30 minutes in seconds
+            const timerDisplay = document.getElementById('timer-display');
+            updateTimerDisplay(timeLeft, timerDisplay);
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay(timeLeft, timerDisplay);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "[ TIME_OUT // ENFORCING_SUBMIT ]";
+                    submitQuiz(true); // Auto submit when time is up
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(seconds, display) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            display.textContent = `[ T-MINUS: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} ]`;
+
+            if (seconds <= 300) { // Last 5 minutes
+                display.style.color = '#ef4444';
+                display.style.borderColor = '#ef4444';
+                display.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.4)';
+                display.style.textShadow = '0 0 5px #ef4444';
+            }
+        }
 
         function renderQuiz() {
             const container = document.getElementById('questions-container');
@@ -315,7 +545,7 @@
                 qTitle.style.marginBottom = '15px';
                 qTitle.style.fontSize = '1.2rem';
                 qTitle.style.lineHeight = '1.5';
-                qTitle.innerHTML = `<span style="color: var(--primary);">[${qIndex + 1}]</span> ${qObj.q}`;
+                qTitle.innerHTML = `<span style="color: var(--primary);">[${qIndex + 1}]</span> <span style="color: #eab308; font-size: 0.9em;">[${qObj.title || 'General'}]</span> <br><br> ${qObj.q}`;
                 card.appendChild(qTitle);
 
                 qObj.opts.forEach((opt, oIndex) => {
@@ -343,16 +573,23 @@
             });
         }
 
-        document.getElementById('submit-btn').addEventListener('click', async () => {
-            if (userAnswers.includes(null)) {
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            submitQuiz(false);
+        });
+
+        async function submitQuiz(isAutoSubmit = false) {
+            if (!isAutoSubmit && userAnswers.includes(null)) {
                 document.getElementById('submit-error').classList.remove('hidden');
                 return;
             }
+
+            isDeskLocked = false; // Disable security checks once submitting
+            clearInterval(timerInterval); // Stop timer
             document.getElementById('submit-error').classList.add('hidden');
 
             let score = 0;
             userAnswers.forEach((ans, i) => {
-                if (ans == questions[i].ans) score++;
+                if (ans !== null && ans == questions[i].ans) score++;
             });
 
             const name = document.getElementById('name').value.trim();
@@ -382,9 +619,75 @@
             document.getElementById('res-name').textContent = name;
             document.getElementById('res-score').textContent = score;
             document.getElementById('res-total').textContent = questions.length;
+
+            if (isAutoSubmit) {
+                document.querySelector('#result-screen h2').textContent = "> TIME_OUT // AUTO_SUBMITTED";
+                document.querySelector('#result-screen h2').style.color = "#ef4444";
+            }
+
             document.getElementById('result-screen').classList.remove('hidden');
             window.scrollTo(0, 0);
-        });
+
+            // Exit fullscreen mode after submission
+            if (document.fullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(err => console.log(err));
+                } else if (document.mozCancelFullScreen) { /* Firefox */
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE/Edge */
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        async function viewScores() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('scores-screen').classList.remove('hidden');
+            const tbody = document.querySelector('#public-scores-table tbody');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Fetching leaderboard...</td></tr>';
+            try {
+                if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE' && false) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">URL Not Set</td></tr>';
+                    return;
+                }
+                const res = await fetch(SCRIPT_URL + '?action=getScores');
+                const data = await res.json();
+                tbody.innerHTML = '';
+                if (!data.scores || data.scores.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3">No public records found.</td></tr>';
+                    return;
+                }
+
+                // Sort scores descending based on score parsing where result is "score / total"
+                data.scores.sort((a, b) => {
+                    const sa = parseInt(a.result.split('/')[0]) || 0;
+                    const sb = parseInt(b.result.split('/')[0]) || 0;
+                    return sb - sa;
+                });
+
+                data.scores.forEach((s, idx) => {
+                    tbody.innerHTML += `<tr>
+                        <td style="padding:10px; border-bottom:1px solid var(--border); color:var(--text-muted);">${idx + 1}</td>
+                        <td style="padding:10px; border-bottom:1px solid var(--border);">${s.name.replace(/</g, "&lt;")}</td>
+                        <td style="padding:10px; border-bottom:1px solid var(--border); font-weight:bold; color:var(--primary);">${s.result}</td>
+                    </tr>`;
+                });
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="3" style="color:#ef4444;text-align:center;">Network Error</td></tr>';
+            }
+        }
+
+        function closeScores() {
+            document.getElementById('scores-screen').classList.add('hidden');
+            if (userAnswers.includes(null) || userAnswers.length === 0) {
+                document.getElementById('start-screen').classList.remove('hidden');
+            } else {
+                document.getElementById('result-screen').classList.remove('hidden');
+            }
+        }
 
         init();
     </script>

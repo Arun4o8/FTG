@@ -161,10 +161,92 @@
             overflow-x: auto;
             color: #eab308;
         }
+
+        /* FTG Glitch Effect */
+        .ftg-logo {
+            position: fixed;
+            top: 20px;
+            right: 25px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            z-index: 9999;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary-glow);
+            user-select: none;
+            cursor: default;
+        }
+
+        .ftg-logo::before,
+        .ftg-logo::after {
+            content: "FTG";
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.8;
+        }
+
+        .ftg-logo::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-anim-1 0.2s infinite linear alternate-reverse;
+        }
+
+        .ftg-logo::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% {
+                transform: translate(0)
+            }
+
+            25% {
+                transform: translate(-2px, 1px)
+            }
+
+            50% {
+                transform: translate(-1px, -1px)
+            }
+
+            75% {
+                transform: translate(2px, 1px)
+            }
+
+            100% {
+                transform: translate(1px, -1px)
+            }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% {
+                transform: translate(0)
+            }
+
+            25% {
+                transform: translate(2px, -1px)
+            }
+
+            50% {
+                transform: translate(1px, 1px)
+            }
+
+            75% {
+                transform: translate(-2px, -1px)
+            }
+
+            100% {
+                transform: translate(-1px, 1px)
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- FTG Logo with Glitch Effect -->
+    <div class="ftg-logo" title="Fix The Glitch">FTG</div>
 
     <!-- Login Overlay -->
     <div class="container" id="auth-screen">
@@ -183,56 +265,10 @@
     <div class="container hidden" id="admin-dashboard">
         <div class="header">
             <h1>SYS_ADMIN // FIX_THE_GLITCH</h1>
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('questions')">Manage Questions</button>
-                <button class="tab-btn" onclick="switchTab('scores')">Leaderboard</button>
-            </div>
-        </div>
-
-        <!-- Questions Tab -->
-        <div id="tab-questions">
-            <div class="card">
-                <h3>> Add New Question</h3>
-                <textarea id="q-text" rows="3" placeholder="Enter Question or Code Snippet here..."></textarea>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <input type="text" id="q-opt0" placeholder="Option 0">
-                    <input type="text" id="q-opt1" placeholder="Option 1">
-                    <input type="text" id="q-opt2" placeholder="Option 2">
-                    <input type="text" id="q-opt3" placeholder="Option 3">
-                </div>
-
-                <input type="number" id="q-ans" placeholder="Correct Option Index (0, 1, 2, or 3)" min="0" max="3"
-                    style="width: 50%;">
-                <br>
-                <button class="primary" id="add-q-btn" onclick="addQuestion()">UPLOAD QUESTION</button>
-                <span id="q-status" style="margin-left: 15px; color: var(--primary);"></span>
-            </div>
-
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>> Active Database</h3>
-                    <button onclick="loadQuestions()" class="primary"
-                        style="padding: 6px 12px; font-size: 14px;">REFRESH DATA</button>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table id="questions-table">
-                        <thead>
-                            <tr>
-                                <th width="5%">ID</th>
-                                <th width="45%">Question Query</th>
-                                <th width="40%">Options array</th>
-                                <th width="10%">Ans</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
         <!-- Scores Tab -->
-        <div id="tab-scores" class="hidden">
+        <div id="tab-scores">
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3>> Global Leaderboard</h3>
@@ -267,51 +303,14 @@
             if (pass === 'admin123') {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
-                loadQuestions();
                 loadScores();
             } else {
                 alert('ACCESS DENIED: Invalid Security Key');
             }
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-questions').classList.add('hidden');
-            document.getElementById('tab-scores').classList.add('hidden');
-
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            event.target.classList.add('active');
-        }
-
         function escapeHTML(str) {
             return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        async function loadQuestions() {
-            const tbody = document.querySelector('#questions-table tbody');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Fetching database...</td></tr>';
-            if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyet4FC3zq5nhy95hXqkQUYSDdTTiCn1xJ0Ig91rpQAXb3qmdw-uc28RXkl_Wst-f4tkg/exec' && false) { // Skip check for live URL
-                tbody.innerHTML = '<tr><td colspan="4" style="color:#ef4444;text-align:center;">API URL UNCONFIGURED.</td></tr>';
-                return;
-            }
-
-            try {
-                const res = await fetch(SCRIPT_URL + '?action=getQuestions');
-                const data = await res.json();
-                tbody.innerHTML = '';
-
-                if (!data.questions || data.questions.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">No queries found.</td></tr>';
-                    return;
-                }
-
-                data.questions.forEach((q, i) => {
-                    const preview = q.q.length > 60 ? escapeHTML(q.q.substring(0, 60)) + "..." : escapeHTML(q.q);
-                    tbody.innerHTML += "<tr><td>" + i + "</td><td><div style='max-height: 80px; overflow:hidden;'>" + preview + "</div></td><td><span style='color:var(--muted)'>[</span> " + escapeHTML(q.opts.join(', ')) + " <span style='color:var(--muted)'>]</span></td><td style='color: var(--primary); font-weight:bold;'>" + q.ans + "</td></tr>";
-                });
-            } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="4" style="color:#ef4444;">Network connection error.</td></tr>';
-            }
         }
 
         async function loadScores() {
@@ -335,59 +334,6 @@
             } catch (e) {
                 tbody.innerHTML = '<tr><td colspan="5" style="color:#ef4444;">Failed to sync scores.</td></tr>';
             }
-        }
-
-        async function addQuestion() {
-            if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyet4FC3zq5nhy95hXqkQUYSDdTTiCn1xJ0Ig91rpQAXb3qmdw-uc28RXkl_Wst-f4tkg/exec' && false) { // Skip check for live URL
-                alert("SYS_ERROR: SCRIPT_URL missing configuration."); return;
-            }
-
-            const q = document.getElementById('q-text').value.trim();
-            const opts = [
-                document.getElementById('q-opt0').value.trim(),
-                document.getElementById('q-opt1').value.trim(),
-                document.getElementById('q-opt2').value.trim(),
-                document.getElementById('q-opt3').value.trim()
-            ];
-            const ans = document.getElementById('q-ans').value.trim();
-
-            if (!q || !opts[0] || !opts[1] || ans === "") {
-                alert("Please fill all required parameters (Question, Options, Answer Index).");
-                return;
-            }
-
-            document.getElementById('add-q-btn').disabled = true;
-            document.getElementById('q-status').textContent = 'Uploading...';
-
-            const payload = {
-                action: 'addQuestion',
-                q: q,
-                opt0: opts[0], opt1: opts[1], opt2: opts[2], opt3: opts[3],
-                ans: ans
-            };
-
-            const params = new URLSearchParams(payload);
-
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString()
-                });
-            } catch (e) { /* Ignore CORS error caused by Google Scripts redirect */ }
-
-            // Assume Success
-            document.getElementById('q-status').textContent = 'Question Inserted Successfully!';
-            document.getElementById('q-text').value = '';
-            document.getElementById('q-opt0').value = '';
-            document.getElementById('q-opt1').value = '';
-            document.getElementById('q-opt2').value = '';
-            document.getElementById('q-opt3').value = '';
-            document.getElementById('q-ans').value = '';
-            setTimeout(() => { document.getElementById('q-status').textContent = ''; }, 3000);
-
-            document.getElementById('add-q-btn').disabled = false;
-            loadQuestions();
         }
     </script>
 </body>

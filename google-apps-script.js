@@ -76,8 +76,9 @@ function doPost(e) {
     const opt2 = e.parameter.opt2;
     const opt3 = e.parameter.opt3;
     const ans = e.parameter.ans;
+    const title = e.parameter.title || "";
 
-    sheet.appendRow([q, opt0, opt1, opt2, opt3, ans]);
+    sheet.appendRow([q, opt0, opt1, opt2, opt3, ans, title]);
 
     return ContentService.createTextOutput(JSON.stringify({ "status": "success" }))
       .setMimeType(ContentService.MimeType.JSON)
@@ -96,7 +97,8 @@ function handleGetQuestions() {
     questions.push({
       q: data[i][0],
       opts: [data[i][1], data[i][2], data[i][3], data[i][4]],
-      ans: data[i][5]
+      ans: data[i][5],
+      title: data[i][6] || ""
     });
   }
 
