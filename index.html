@@ -442,12 +442,27 @@
             { "title": "Java", "q": "How to print in Java?", "opts": ["print()", "console.log()", "System.out.println()", "echo"], "ans": 2 },
             { "title": "Java", "q": "Java is platform independent?", "opts": ["Yes", "No", "Only on Windows", "Only on Mac"], "ans": 0 },
 
-            // Dummy C Questions
-            { "title": "C", "q": "Who invented C?", "opts": ["Dennis Ritchie", "Guido", "James", "Bjarne"], "ans": 0 },
-            { "title": "C", "q": "What is the file extension?", "opts": [".c", ".cpp", ".py", ".java"], "ans": 0 },
-            { "title": "C", "q": "Is C object oriented?", "opts": ["Yes", "No", "Partially", "None"], "ans": 1 },
-            { "title": "C", "q": "Which function is used for output?", "opts": ["printf()", "cout", "print", "System.out"], "ans": 0 },
-            { "title": "C", "q": "Which symbol is used for memory address?", "opts": ["&", "*", "#", "$"], "ans": 0 },
+            // C Questions
+            { "title": "C", "q": "Which of the following is the correct extension of a C program file?", "opts": [".cpp", ".java", ".c", ".py"], "ans": 2 },
+            { "title": "C", "q": "Which function is the entry point of a C program?", "opts": ["start()", "main()", "run()", "init()"], "ans": 1 },
+            { "title": "C", "q": "Which of the following is a valid C data type?", "opts": ["integer", "int", "number", "decimal"], "ans": 1 },
+            { "title": "C", "q": "Which symbol is used to end a statement in C?", "opts": [":", ".", ";", ","], "ans": 2 },
+            { "title": "C", "q": "Which header file is required for printf()?", "opts": ["stdlib.h", "conio.h", "string.h", "stdio.h"], "ans": 3 },
+            { "title": "C", "q": "What is the size of int in most 32-bit and 64-bit C compilers?", "opts": ["2 bytes", "4 bytes", "8 bytes", "Depends only on OS"], "ans": 1 },
+            { "title": "C", "q": "What will be the output?\nint x = 5; printf(\"%d\", x++);", "opts": ["5", "6", "4", "Error"], "ans": 0 },
+            { "title": "C", "q": "Which operator is used to access the value at an address (pointer dereferencing)?", "opts": ["&", "*", "%", "->"], "ans": 1 },
+            { "title": "C", "q": "What will be the output?\nint a = 10, b = 20; printf(\"%d\", a > b);", "opts": ["0", "1", "10", "Error"], "ans": 0 },
+            { "title": "C", "q": "Which loop executes at least once?", "opts": ["for", "while", "do-while", "None"], "ans": 2 },
+            { "title": "C", "q": "What will be the output?\nchar str[] = \"Hello\"; printf(\"%lu\", sizeof(str));", "opts": ["5", "6", "4", "Error"], "ans": 1 },
+            { "title": "C", "q": "Which function is used to dynamically allocate memory in C?", "opts": ["alloc()", "malloc()", "create()", "new"], "ans": 1 },
+            { "title": "C", "q": "What will be the output?\nint x = 10; printf(\"%d %d %d\", x, x++, ++x);", "opts": ["10 10 12", "10 11 12", "Undefined behavior", "Compilation error"], "ans": 2 },
+            { "title": "C", "q": "What is the output?\nint arr[] = {1,2,3,4}; printf(\"%d\", *(arr + 2));", "opts": ["2", "3", "4", "1"], "ans": 1 },
+            { "title": "C", "q": "What will happen if free() is called twice on the same pointer?", "opts": ["No problem", "Compilation error", "Undefined behavior", "Memory increases"], "ans": 2 },
+            { "title": "C", "q": "What will be the output?\nint x = 5; if(x = 0) printf(\"True\"); else printf(\"False\");", "opts": ["True", "False", "0", "Error"], "ans": 2 },
+            { "title": "C", "q": "What is the default return type of a function in modern C (C99 and later) if not specified?", "opts": ["int", "float", "void", "Compilation error"], "ans": 3 },
+            { "title": "C", "q": "What will be the output?\nint a = 5; printf(\"%d\", sizeof(a++));", "opts": ["5", "4", "6", "Undefined"], "ans": 1 },
+            { "title": "C", "q": "Which storage class makes a variable retain its value between function calls?", "opts": ["auto", "register", "static", "extern"], "ans": 2 },
+            { "title": "C", "q": "What will be the output?\nint *p = NULL; printf(\"%d\", *p);", "opts": ["0", "Garbage value", "Segmentation fault / Runtime error", "Compilation error"], "ans": 2 },
 
             // Dummy HTML Questions
             { "title": "Html", "q": "What does HTML stand for?", "opts": ["Hyper Text Markup Language", "Hyperlinks", "Home Tool", "None"], "ans": 0 },
