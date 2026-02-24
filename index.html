@@ -435,12 +435,27 @@
             { "title": "Python", "q": "What is the output?\nx = [1,2]\ny = x.copy()\nprint(x is y)", "opts": ["True", "False", "Error", "None"], "ans": 1 },
             { "title": "Python", "q": "Which keyword skips current iteration?", "opts": ["pass", "continue", "break", "skip"], "ans": 1 },
 
-            // Dummy Java Questions
-            { "title": "Java", "q": "What is Java?", "opts": ["Language", "Coffee", "OS", "DB"], "ans": 0 },
-            { "title": "Java", "q": "Java is short for Javascript?", "opts": ["True", "False", "Maybe", "Depends"], "ans": 1 },
-            { "title": "Java", "q": "Which is a valid keyword?", "opts": ["interface", "include", "def", "fun"], "ans": 0 },
-            { "title": "Java", "q": "How to print in Java?", "opts": ["print()", "console.log()", "System.out.println()", "echo"], "ans": 2 },
-            { "title": "Java", "q": "Java is platform independent?", "opts": ["Yes", "No", "Only on Windows", "Only on Mac"], "ans": 0 },
+            // Java Questions
+            { "title": "Java", "q": "What is the output?\nint x = 10;\nSystem.out.println(x++);\nSystem.out.println(x);", "opts": ["10 10", "11 11", "10 11", "11 10"], "ans": 2 },
+            { "title": "Java", "q": "Find the error:\nSystem.out.println(\"Hello World\")", "opts": ["Missing semicolon", "Wrong method name", "Wrong class name", "No error"], "ans": 0 },
+            { "title": "Java", "q": "What is the output?\nString s1 = \"Java\";\nString s2 = \"Java\";\nSystem.out.println(s1 == s2);", "opts": ["false", "true", "Compilation error", "Runtime error"], "ans": 1 },
+            { "title": "Java", "q": "What happens?\nint arr[] = new int[3];\nSystem.out.println(arr[3]);", "opts": ["0", "null", "ArrayIndexOutOfBoundsException", "Compilation error"], "ans": 2 },
+            { "title": "Java", "q": "What is the output?\nSystem.out.println(10 + 20 + \"Java\" + 10 + 20);", "opts": ["30Java1020", "30Java30", "1020Java1020", "Java102030"], "ans": 0 },
+            { "title": "Java", "q": "What is printed?\nInteger a = 127;\nInteger b = 127;\nSystem.out.println(a == b);", "opts": ["true", "false", "Runtime error", "Compilation error"], "ans": 0 },
+            { "title": "Java", "q": "What happens?\nint x = 5;\nif(x = 10)\nSystem.out.println(\"Yes\");\nelse\nSystem.out.println(\"No\");", "opts": ["Yes", "No", "Compilation error", "Runtime error"], "ans": 2 },
+            { "title": "Java", "q": "What happens?\nfinal int x;\nSystem.out.println(x);", "opts": ["0", "Compilation error", "Runtime error", "null"], "ans": 1 },
+            { "title": "Java", "q": "What is the output?\nString s = null;\nSystem.out.println(s.length());", "opts": ["0", "NullPointerException", "Compilation error", "null"], "ans": 1 },
+            { "title": "Java", "q": "Which line causes error?\nList list = new ArrayList();\nlist.add(\"Java\");\nlist.add(10);\nString s = (String) list.get(1);", "opts": ["Line 1", "Line 2", "Line 3", "Line 4"], "ans": 3 },
+            { "title": "Java", "q": "What is the output?\nParent p = new Child();\np.show();", "opts": ["Parent", "Child", "Compilation error", "Runtime error"], "ans": 0 },
+            { "title": "Java", "q": "What is the output?\ntry {\nint a = 10/0;\n} catch(Exception e) {\nSystem.out.println(\"Exception\");\n} finally {\nSystem.out.println(\"Finally\");\n}", "opts": ["Exception", "Finally", "Exception Finally", "Runtime crash"], "ans": 2 },
+            { "title": "Java", "q": "What happens?\nSystem.out.println(1/0);", "opts": ["0", "Infinity", "Runtime Exception", "Compilation error"], "ans": 2 },
+            { "title": "Java", "q": "What is the output?\nString s = \"abc\";\ns.concat(\"def\");\nSystem.out.println(s);", "opts": ["abcdef", "abc", "Compilation error", "Runtime error"], "ans": 1 },
+            { "title": "Java", "q": "What is the output?\nSystem.out.println('a' + 1);", "opts": ["a1", "b", "98", "Compilation error"], "ans": 2 },
+            { "title": "Java", "q": "What is the output?\nint x = 0;\nSystem.out.println(x++ + ++x);", "opts": ["1", "2", "3", "4"], "ans": 1 },
+            { "title": "Java", "q": "What happens?\nclass A { void m() throws Exception {} }\nclass B extends A { void m() throws java.io.IOException {} }", "opts": ["Compilation error", "Valid", "Runtime error", "Infinite loop"], "ans": 1 },
+            { "title": "Java", "q": "What is the output?\nString s1 = new String(\"Java\");\nString s2 = \"Java\";\nSystem.out.println(s1 == s2);", "opts": ["true", "false", "Compilation error", "Runtime error"], "ans": 1 },
+            { "title": "Java", "q": "What is the output?\nstatic {\nSystem.out.println(\"Static Block\");\n}\npublic static void main(String[] args) {\nSystem.out.println(\"Main\");\n}", "opts": ["Main Static Block", "Static Block Main", "Only Main", "Compilation error"], "ans": 1 },
+            { "title": "Java", "q": "What is the output?\ntry {\nreturn;\n} finally {\nSystem.out.println(\"Finally\");\n}", "opts": ["Nothing prints", "Finally", "Runtime error", "Compilation error"], "ans": 1 },
 
             // C Questions
             { "title": "C", "q": "Which of the following is the correct extension of a C program file?", "opts": [".cpp", ".java", ".c", ".py"], "ans": 2 },
