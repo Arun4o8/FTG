@@ -35,6 +35,8 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 10;
         }
 
         .glitch-title {
@@ -262,10 +264,87 @@
                 transform: translate(-1px, 1px)
             }
         }
+
+        /* Rain Container Styles */
+        .rain-container {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            z-index: 5;
+            pointer-events: none;
+            overflow: hidden;
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+
+        .rain-container.left-container {
+            left: 10px;
+        }
+
+        .rain-container.right-container {
+            right: 10px;
+        }
+
+        .rain-drop {
+            position: absolute;
+            color: var(--primary);
+            font-family: 'Share Tech Mono', monospace;
+            text-shadow: 0 0 5px var(--primary-glow);
+            animation: fall linear infinite;
+            opacity: 0.8;
+            top: -200px;
+            line-height: 1.2;
+            word-break: break-all;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(120vh);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .rain-container {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .rain-container {
+                width: 150px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .rain-container {
+                display: none;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Left Rain Container -->
+    <div id="rain-container-left" class="rain-container left-container"></div>
+
+    <!-- Right Rain Container -->
+    <div id="rain-container-right" class="rain-container right-container"></div>
+
     <!-- FTG Logo with Glitch Effect -->
     <div class="ftg-logo" title="Fix The Glitch">FTG</div>
     <div class="container">
@@ -978,6 +1057,78 @@
                 document.getElementById('result-screen').classList.remove('hidden');
             }
         }
+
+        // Matrix Rain Logic
+        const leftNames = [
+            "COORDINATOR",
+            "1. Bharath P (Final Year Ai&Ds)",
+            "2. Suvisesh V (Final Year Ai&Ds)",
+            "3. Arun P (Final Year Cse)",
+            "CO-COORDINATOR",
+            "1. Gowtham Babu (3rd Year Ai&Ds)",
+            "2. Hameshraman (3rd Year Cse)",
+            "3. Muktha Sree (3rd Year Cys)"
+        ];
+
+        const rightNames = [
+            "3RD YEAR AI & DS",
+            "1. Bhavana",
+            "2. Shri Durga",
+            "3. Monish",
+            "2ND YEAR AI & DS",
+            "1. Shobhana",
+            "2. Swetha",
+            "3. Lakshanaya",
+            "2ND YEAR CSE",
+            "1. Murali",
+            "2. Abinaya",
+            "3. Kowshik"
+        ];
+
+        function spawnRain(containerId, names) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const drop = document.createElement('div');
+            drop.classList.add('rain-drop');
+
+            // 60% chance for vertical 1s and 0s stream, 40% chance for Name
+            if (Math.random() < 0.6) {
+                const length = Math.floor(Math.random() * 10) + 5;
+                let bin = "";
+                for (let i = 0; i < length; i++) bin += Math.random() > 0.5 ? "1<br>" : "0<br>";
+                drop.innerHTML = bin;
+                drop.style.color = "rgba(34, 197, 94, 0.4)"; // Faded matrix green
+                drop.style.fontSize = (Math.random() * 0.4 + 1) + "rem";
+                drop.style.left = (Math.random() * 90) + "%";
+            } else {
+                const name = names[Math.floor(Math.random() * names.length)];
+                // Display name horizontally while dropping
+                drop.innerHTML = `
+                    <div style="color:rgba(34, 197, 94, 0.4); text-align:center; font-size:0.8em; margin-bottom:5px;">${Math.random() > 0.5 ? "1<br>0" : "0<br>1"}</div>
+                    <div style="color:#eab308; text-shadow:0 0 5px #eab308; font-weight:bold; word-wrap:break-word;">${name}</div>
+                    <div style="color:rgba(34, 197, 94, 0.4); text-align:center; font-size:0.8em; margin-top:5px;">${Math.random() > 0.5 ? "0<br>1" : "1<br>0"}</div>
+                `;
+                drop.style.fontSize = (Math.random() * 0.15 + 0.9) + "rem";
+                drop.style.zIndex = "10";
+                drop.style.width = "90%";
+                drop.style.left = (Math.random() * 10 + 5) + "%"; // Keep names generally centered
+                drop.style.textAlign = "center";
+            }
+
+            const duration = Math.random() * 8 + 8; // 8s to 16s fall duration
+            drop.style.animationDuration = duration + "s";
+
+            container.appendChild(drop);
+            setTimeout(() => {
+                if (drop.parentNode === container) {
+                    container.removeChild(drop);
+                }
+            }, duration * 1000);
+        }
+
+        setInterval(() => spawnRain('rain-container-left', leftNames), 1200);
+        setInterval(() => spawnRain('rain-container-right', rightNames), 1200);
 
         init();
     </script>
