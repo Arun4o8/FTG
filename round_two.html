@@ -428,7 +428,7 @@
 
     <script>
         // --- Countdown Timer ---
-        let timeRemaining = 45 * 60; // 45 mins
+        let timeRemaining = 90 * 60; // 90 mins
         const timerElement = document.getElementById('timer');
         let timerInterval;
 
@@ -892,7 +892,7 @@
             formData.append('phoneNumber', document.getElementById('phoneNumber').value);
 
             // Calculate exact time taken for leaderboard speed checks
-            const timeElapsedInSeconds = (45 * 60) - timeRemaining;
+            const timeElapsedInSeconds = (90 * 60) - timeRemaining;
             let elapsedMins = Math.floor(timeElapsedInSeconds / 60);
             let elapsedSecs = timeElapsedInSeconds % 60;
             elapsedMins = elapsedMins < 10 ? '0' + elapsedMins : elapsedMins;
