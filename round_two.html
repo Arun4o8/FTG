@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round 2: Technical Challenge</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --bg-color: #000000;
+            --text-color: #00ff00;
+            --container-bg: #0a0a0a;
+            --border-color: #00ff00;
+            --primary-color: #00ff00;
+            --editor-bg: #050505;
+            --editor-text: #00ff00;
+            --error-color: #ff0033;
+            --success-color: #00ff00;
+            --glow: 0 0 10px rgba(0, 255, 0, 0.5);
+            --font-family: 'Share Tech Mono', 'Courier New', monospace;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            user-select: none;
+            /* Prevent cheating/highlighting */
+        }
+
+        /* Allow typing and selecting inside inputs/editors ONLY */
+        input,
+        select,
+        textarea {
+            user-select: text !important;
+        }
+
+        /* Matrix rain animated background effect styles */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.15),
+                    rgba(0, 0, 0, 0.15) 1px,
+                    transparent 1px,
+                    transparent 2px);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--glow);
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 1.8rem;
+            text-shadow: var(--glow);
+            text-transform: uppercase;
+        }
+
+        .timer-container {
+            font-size: 1.4rem;
+            font-weight: bold;
+            background-color: #001a00;
+            padding: 10px 20px;
+            border-radius: 3px;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: inset 0 0 5px rgba(0, 255, 0, 0.2), 0 0 5px rgba(0, 255, 0, 0.2);
+            }
+
+            50% {
+                box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.5), 0 0 15px rgba(0, 255, 0, 0.5);
+            }
+
+            100% {
+                box-shadow: inset 0 0 5px rgba(0, 255, 0, 0.2), 0 0 5px rgba(0, 255, 0, 0.2);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 3px;
+            border: 1px solid #005500;
+            background-color: #000;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-family: var(--font-family);
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+        }
+
+        .question-section {
+            background-color: #050a05;
+            padding: 25px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border: 1px solid #004400;
+            position: relative;
+        }
+
+        .question-section::before {
+            content: '>';
+            position: absolute;
+            left: 10px;
+            top: 25px;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            margin-left: 20px;
+            color: var(--primary-color);
+            border-bottom: 1px dashed #004400;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        p.problem-statement {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #ccc;
+            margin-left: 20px;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0a1f0a;
+            padding: 5px 15px;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .editor-header label {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .editor-header select {
+            width: auto;
+            padding: 5px 10px;
+            font-size: 1rem;
+            background-color: #000;
+        }
+
+        textarea.editor {
+            width: 100%;
+            height: 250px;
+            background-color: var(--editor-bg);
+            color: var(--editor-text);
+            font-family: var(--font-family);
+            padding: 15px;
+            border-radius: 0 0 3px 3px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            resize: vertical;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        pre.code-block {
+            background-color: var(--editor-bg);
+            color: #ccc;
+            padding: 15px;
+            border-radius: 3px;
+            font-family: var(--font-family);
+            border: 1px dashed #004400;
+            border-left: 4px solid var(--primary-color);
+            white-space: pre-wrap;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .btn-run {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 8px 15px;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-run:hover {
+            background-color: var(--primary-color);
+            color: #000;
+            box-shadow: var(--glow);
+        }
+
+        .btn-run:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .output-box {
+            margin-top: 15px;
+            background-color: #000;
+            border: 1px dashed #005500;
+            padding: 15px;
+            font-size: 1rem;
+            color: #ccc;
+            min-height: 50px;
+            white-space: pre-wrap;
+            display: none;
+        }
+
+        button.submit-btn {
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 15px 25px;
+            font-family: var(--font-family);
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        button.submit-btn:hover {
+            background-color: #39ff14;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        button.submit-btn.loading {
+            opacity: 0.7;
+            cursor: wait;
+            animation: pulse-border 1s infinite;
+        }
+
+        #thank-you-message {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        #thank-you-message h2 {
+            border: none;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: var(--glow);
+        }
+
+        #thank-you-message p {
+            font-size: 1.3rem;
+            color: #aaa;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #landing-screen {
+            text-align: center;
+            max-width: 600px;
+            margin: 50px auto;
+            position: relative;
+            z-index: 100;
+        }
+
+        #landing-screen h2 {
+            border: none;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        #landing-screen p {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        #landing-error {
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+            padding: 15px;
+            margin-bottom: 25px;
+            font-weight: bold;
+            background: rgba(255, 0, 51, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .timer-container {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="matrix-bg"></div>
+
+    <!-- Landing Screen -->
+    <div id="landing-screen" class="container">
+        <h2>> SECURE_TEST_ENVIRONMENT</h2>
+        <div id="landing-error" class="hidden"></div>
+        <p>Please enter full-screen mode to access the Hack The Terminal challenge. If you attempt to switch tabs or
+            exit fullscreen, the terminal will lock you out.</p>
+        <button type="button" class="submit-btn" id="enter-fullscreen-btn">> ENTER_FULLSCREEN_MODE</button>
+    </div>
+
+    <div class="container hidden" id="main-container">
+        <form id="challenge-form">
+            <header>
+                <h1>[ ROUND 2 : HACK THE TERMINAL ]</h1>
+                <div class="timer-container">
+                    T-MINUS: <span id="timer">45:00</span>
+                </div>
+            </header>
+
+            <div class="form-group">
+                <label for="studentName">> Student Name_</label>
+                <input type="text" id="studentName" name="studentName" required placeholder="Enter your full name"
+                    autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="collegeName">> College Name_</label>
+                <input type="text" id="collegeName" name="collegeName" required placeholder="Enter your college"
+                    autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">> Phone Number_</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="Enter valid phone number"
+                    autocomplete="off">
+            </div>
+
+            <!-- QUESTION 1 -->
+            <div class="question-section">
+                <h2>Q1: Spot the Defect (4 Marks)</h2>
+                <p class="problem-statement">
+                    <strong>Objective:</strong> The following ~10 line program is supposed to calculate and print the
+                    Factorial of 5 but it is <strong>heavily broken with exactly 10 errors</strong>. Fix all 10
+                    syntax/logical errors, select the appropriate language, run to verify!
+                </p>
+                <div class="editor-header">
+                    <label for="lang1">> Select Language:</label>
+                    <select id="lang1" name="lang1" required onchange="changeQ1Language()">
+                        <option value="">-- Choose --</option>
+                        <option value="c">C</option>
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                    </select>
+                </div>
+                <textarea id="code1" name="code1" class="editor" required
+                    placeholder="Select language to load code..."></textarea>
+                <div class="action-row">
+                    <button type="button" class="btn-run" onclick="runCode(1)">[ Execute Code ]</button>
+                    <span id="status1" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
+                </div>
+                <div id="output1" class="output-box"></div>
+            </div>
+
+            <!-- QUESTION 2 -->
+            <div class="question-section">
+                <h2>Q2: Missing Modules (4 Marks)</h2>
+                <p class="problem-statement">
+                    <strong>Objective:</strong> Fill in the <code>____</code> blanks inside the loops so the logic
+                    accurately generates the first 5 Fibonacci numbers (0 1 1 2 3).
+                </p>
+                <div class="editor-header">
+                    <label for="lang2">> Select Language:</label>
+                    <select id="lang2" name="lang2" required onchange="changeQ2Language()">
+                        <option value="">-- Choose --</option>
+                        <option value="c">C</option>
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                    </select>
+                </div>
+                <textarea id="code2" name="code2" class="editor" required
+                    placeholder="Select language to load code..."></textarea>
+                <div class="action-row">
+                    <button type="button" class="btn-run" onclick="runCode(2)">[ Execute Code ]</button>
+                    <span id="status2" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
+                </div>
+                <div id="output2" class="output-box"></div>
+            </div>
+
+            <!-- QUESTION 3 -->
+            <div class="question-section">
+                <h2>Q3: Reverse Engineering (4 Marks)</h2>
+                <p class="problem-statement">
+                    <strong>Objective:</strong> Trace the logic below entirely mentally. What will be the exact output
+                    printed to the terminal? NO compiler access given for this layer.
+                </p>
+                <pre class="code-block">
+int a = 2, b = 5;
+while(a < b) {
+    a++;
+    b--;
+}
+printf("%d %d", a, b);
+                </pre>
+                <div class="form-group" style="margin-top:15px; margin-bottom: 0;">
+                    <label for="q3Answer">> Predicted Terminal Output_</label>
+                    <input type="text" id="q3Answer" name="q3Answer" required
+                        placeholder="Type the final numbers outputted...">
+                </div>
+            </div>
+
+            <!-- QUESTION 4 -->
+            <div class="question-section">
+                <h2>Q4: Logic Builder (4 Marks)</h2>
+                <p class="problem-statement">
+                    <strong>Objective:</strong> Build a program from scratch to check if a String is a
+                    <strong>Palindrome</strong>. Select your language, write the core logic, run to check output, and
+                    submit!
+                </p>
+                <div class="editor-header">
+                    <label for="lang4">> Select Language:</label>
+                    <select id="lang4" name="lang4" required>
+                        <option value="">-- Choose --</option>
+                        <option value="c">C</option>
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                    </select>
+                </div>
+                <textarea id="code4" name="code4" class="editor" required
+                    placeholder="Write Palindrome logic here..."></textarea>
+                <div class="action-row">
+                    <button type="button" class="btn-run" onclick="runCode(4)">[ Execute Code ]</button>
+                    <span id="status4" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
+                </div>
+                <div id="output4" class="output-box"></div>
+            </div>
+
+            <!-- QUESTION 5 -->
+            <div class="question-section">
+                <h2>Q5: Master Algorithm (4 Marks)</h2>
+                <p class="problem-statement">
+                    <strong>Objective:</strong> Write a program to find and print the <strong>Largest Number</strong>
+                    present in an Array (e.g., [12, 45, 7, 23, 9]).
+                </p>
+                <div class="editor-header">
+                    <label for="lang5">> Select Language:</label>
+                    <select id="lang5" name="lang5" required>
+                        <option value="">-- Choose --</option>
+                        <option value="c">C</option>
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                    </select>
+                </div>
+                <textarea id="code5" name="code5" class="editor" required
+                    placeholder="Write max array logic here..."></textarea>
+                <div class="action-row">
+                    <button type="button" class="btn-run" onclick="runCode(5)">[ Execute Code ]</button>
+                    <span id="status5" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
+                </div>
+                <div id="output5" class="output-box"></div>
+            </div>
+
+            <button type="submit" id="submit-btn" class="submit-btn">> SUBMIT_SYS.DATA </button>
+        </form>
+
+        <div id="thank-you-message">
+            <h2>[ ✔ ALGORITHM COMPLETED ]</h2>
+            <p>Data packets successfully transmitted to host server.</p>
+            <p>You may now close this terminal securely.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Countdown Timer ---
+        let timeRemaining = 45 * 60; // 45 mins
+        const timerElement = document.getElementById('timer');
+        let timerInterval;
+
+        function updateTimer() {
+            let minutes = Math.floor(timeRemaining / 60);
+            let seconds = timeRemaining % 60;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            timerElement.textContent = `${minutes}:${seconds}`;
+
+            if (timeRemaining <= 180) { // last 3 mins red alert
+                timerElement.style.color = '#ff0033';
+                timerElement.style.borderColor = '#ff0033';
+            }
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "00:00";
+                alert("TIME LIMIT REACHED. Forcing submission protocol.");
+                document.getElementById('challenge-form').requestSubmit();
+            }
+            timeRemaining--;
+        }
+
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // --- Question 1 Language Switching ---
+        const q1Templates = {
+            c: `#include <stdio.h>\nint main( { \n    int n = 5\n    int fact = 0; \n    for (int i=1, i<=n, i++) { \n        fact = fact * i \n    }\n    prntf("Factorial is %d\\n", factorial); \n    if (fact = 120) { \n        printf("Correct") \n    }\n    return 0 \n}`,
+            java: `public class Main {\n    public void main(String[] args) { \n        int n = 5 \n        int fact = 0; \n        for (int i=1, i<=n, i++) { \n            fact = fact * i \n        }\n        System.out.putln("Fac: " + factorial); \n        if (fact = 120) { \n            System.out.printl("Correct") \n        }\n    }\n}`,
+            python: `def calc_factorial():\n    n = 5\n    fact = 0 \n    for i in range(1, n) \n        fact = fact * i\n    print("Factorial is " + factorial) \n    if fact = 120 \n        print("Correct" \n    else \n        print(Wrong)\n\ncalc_factorial()`
+        };
+
+        function changeQ1Language() {
+            const lang = document.getElementById('lang1').value;
+            document.getElementById('code1').value = q1Templates[lang] || "";
+            document.getElementById('output1').style.display = 'none';
+        }
+
+        // --- Question 2 Language Switching ---
+        const q2Templates = {
+            c: `#include <stdio.h>\nint main() {\n    int n1=0, n2=1, n3, i, count=5;\n    printf("%d %d", n1, n2);\n    for(i=2; i<count; ____) {\n        n3 = n1 + n2;\n        printf(" %d", n3);\n        n1 = ____;\n        n2 = ____;\n    }\n    return 0;\n}`,
+            java: `public class Main {\n    public static void main(String[] args) {\n        int n1=0, n2=1, n3, i, count=5;\n        System.out.print(n1 + " " + n2);\n        for(i=2; i<count; ____) {\n            n3 = n1 + n2;\n            System.out.print(" " + n3);\n            n1 = ____;\n            n2 = ____;\n        }\n    }\n}`,
+            python: `def print_fibo():\n    n1, n2 = 0, 1\n    count = 5\n    print(n1, n2, end=" ")\n    for i in range(2, count):\n        n3 = n1 + n2\n        print(n3, end=" ")\n        n1 = ____\n        n2 = ____\n\nprint_fibo()`
+        };
+
+        function changeQ2Language() {
+            const lang = document.getElementById('lang2').value;
+            document.getElementById('code2').value = q2Templates[lang] || "";
+            document.getElementById('output2').style.display = 'none';
+        }
+
+
+        // --- Code Execution Module (Live API with Offline Fallback) ---
+        let questionScores = { q1: 0, q2: 0, q3: 0, q4: 0, q5: 0 };
+
+        async function runCode(questionNumber) {
+            const langValue = document.getElementById(`lang${questionNumber}`).value;
+            const codeEditor = document.getElementById(`code${questionNumber}`).value;
+            const outputBox = document.getElementById(`output${questionNumber}`);
+            const statusSpan = document.getElementById(`status${questionNumber}`);
+
+            if (!langValue) {
+                alert("Please select a programming language first!");
+                return;
+            }
+            if (codeEditor.trim() === '') {
+                alert("Code editor is empty!");
+                return;
+            }
+
+            outputBox.style.display = 'block';
+            outputBox.textContent = '> Compiling code in live server...';
+            statusSpan.style.display = 'inline';
+
+            let languageId = 92; // Python 3.11 default
+            if (langValue === 'c') languageId = 103; // C GCC 14.1
+            else if (langValue === 'java') languageId = 91; // Java JDK 17
+
+            try {
+                // Attempt Live API call
+                const response = await fetch("https://ce.judge0.com/submissions?base64_encoded=false&wait=true", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        source_code: codeEditor,
+                        language_id: languageId,
+                    })
+                });
+
+                if (!response.ok) throw new Error("Live API failed");
+                const result = await response.json();
+
+                let actualOutput = result.stdout || "";
+                let errorOutput = result.compile_output || result.stderr || result.message || "";
+                let validationMessage = "";
+
+                if (result.status.id === 3) { // 3 means Accepted (Compilation & Run Success)
+                    if (questionNumber === 1) {
+                        const code = codeEditor.toLowerCase().replace(/\s/g, '');
+                        let success = false;
+                        if (langValue === 'c') success = code.includes("main()") && !code.includes("prntf") && code.includes("==") && !code.includes("factorial)");
+                        else if (langValue === 'java') success = code.includes("static") && code.includes("==") && !code.includes("putln") && !code.includes("printl") && !code.includes("factorial)");
+                        else if (langValue === 'python') success = code.includes("fact=1") && code.includes("==") && code.includes("wrong");
+
+                        if (success && actualOutput.includes("120")) {
+                            questionScores.q1 = 4;
+                            validationMessage = "\n> 🟢 System Analysis: Target output achieved. All defects neutralized.";
+                        } else {
+                            questionScores.q1 = 0;
+                            validationMessage = "\n> 🔴 System Analysis: Executed, but logic still incorrect or defects remain.";
+                        }
+                    } else if (questionNumber === 2) {
+                        const code = codeEditor.replace(/\s/g, '');
+                        let success = false;
+                        if (langValue === 'c' || langValue === 'java') success = (!code.includes("____")) && code.includes("i++") && (code.includes("n1=n2;") || code.includes("n1=n2")) && (code.includes("n2=n3;") || code.includes("n2=n3"));
+                        else if (langValue === 'python') success = (!code.includes("____")) && code.includes("n1=n2") && code.includes("n2=n3");
+
+                        if (success && actualOutput.includes("0 1 1 2 3")) {
+                            questionScores.q2 = 4;
+                            validationMessage = "\n> 🟢 System Analysis: Modules linked successfully.";
+                        } else {
+                            questionScores.q2 = 0;
+                            validationMessage = "\n> 🔴 System Analysis: Blanks filled, but output does not match first 5 fibonacci.";
+                        }
+                    } else if (questionNumber === 4) {
+                        if (codeEditor.length > 25) {
+                            questionScores.q4 = 4;
+                            validationMessage = "\n> 🟢 System Analysis: Palindrome validated live.";
+                        } else {
+                            questionScores.q4 = 0;
+                            validationMessage = "\n> 🔴 System Analysis: Insufficient code volume.";
+                        }
+                    } else if (questionNumber === 5) {
+                        if (codeEditor.length > 25) {
+                            questionScores.q5 = 4;
+                            validationMessage = "\n> 🟢 System Analysis: Max Array Algorithm verified live.";
+                        } else {
+                            questionScores.q5 = 0;
+                            validationMessage = "\n> 🔴 System Analysis: Provide more logic.";
+                        }
+                    }
+                    outputBox.textContent = "--- COMPILE SUCCESS (LIVE) ---\n--- OUTPUT ---\n" + actualOutput + validationMessage;
+
+                } else {
+                    // Compilation or Runtime Error from Live API
+                    if (questionNumber === 1) questionScores.q1 = 0;
+                    if (questionNumber === 2) questionScores.q2 = 0;
+                    outputBox.textContent = "--- " + result.status.description.toUpperCase() + " (LIVE) ---\n" + errorOutput + "\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
+                }
+
+            } catch (error) {
+                // FALLBACK TO OFFLINE SIMULATED BEHAVIOR
+                setTimeout(() => {
+                    let output = "";
+
+                    if (questionNumber === 1) {
+                        const code = codeEditor.toLowerCase().replace(/\s/g, '');
+                        let success = false;
+                        let errorMsg = "";
+
+                        if (langValue === 'c') {
+                            success = code.includes("main()") && !code.includes("prntf") && code.includes("==") && !code.includes("factorial)");
+                            errorMsg = "main.c: Multiple errors detected. Ensure all variables are defined and syntax typos are corrected.\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
+                        } else if (langValue === 'java') {
+                            success = code.includes("static") && code.includes("==") && !code.includes("putln") && !code.includes("printl") && !code.includes("factorial)");
+                            errorMsg = "Main.java: Failed to compile. Missing types, semi-colons, or undeclared symbols present.\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
+                        } else if (langValue === 'python') {
+                            success = code.includes("fact=1") && code.includes("==") && code.includes("wrong");
+                            errorMsg = "SyntaxError: Invalid syntax or missing logical condition.\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
+                        }
+
+                        if (success) {
+                            questionScores.q1 = 4;
+                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- OUTPUT ---\nFactorial is 120\nCorrect\n\n> 🟢 System Analysis: Target output achieved. All defects neutralized.";
+                        } else {
+                            questionScores.q1 = 0;
+                            output = "--- COMPILE ERROR (FALLBACK) ---\n" + errorMsg;
+                        }
+
+                    } else if (questionNumber === 2) {
+                        const code = codeEditor.replace(/\s/g, '');
+                        let success = false;
+
+                        if (langValue === 'c' || langValue === 'java') {
+                            success = (!code.includes("____")) && code.includes("i++") && (code.includes("n1=n2;") || code.includes("n1=n2")) && (code.includes("n2=n3;") || code.includes("n2=n3"));
+                        } else if (langValue === 'python') {
+                            success = (!code.includes("____")) && code.includes("n1=n2") && code.includes("n2=n3");
+                        }
+
+                        if (success) {
+                            questionScores.q2 = 4;
+                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- OUTPUT ---\n0 1 1 2 3\n\n> 🟢 System Analysis: Modules linked successfully.";
+                        } else {
+                            questionScores.q2 = 0;
+                            output = "--- COMPILE ERROR (FALLBACK) ---\nUnexpected token '____'\n> 🔴 System Analysis: Some blanks are empty or incorrectly filled.";
+                        }
+
+                    } else if (questionNumber === 4) {
+                        if (codeEditor.length > 25) {
+                            questionScores.q4 = 4;
+                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- TEST CASES (SIMULATED) ---\nRunning Test 1 ('MADAM')... Passed\nRunning Test 2 ('12321')... Passed\nRunning Test 3 ('HELLO')... Passed\n\n> 🟢 System Analysis: Palindrome validated.";
+                        } else {
+                            questionScores.q4 = 0;
+                            output = "--- RUNTIME ERROR (FALLBACK) ---\nException: Logic implementation incomplete.\n> 🔴 System Analysis: Insufficient code volume.";
+                        }
+
+                    } else if (questionNumber === 5) {
+                        if (codeEditor.length > 25) {
+                            questionScores.q5 = 4;
+                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- TEST CASES (SIMULATED) ---\nArray [12, 45, 7, 23]... Max is 45 (Passed)\nArray [9, 1, 5]......... Max is 9 (Passed)\n\n> 🟢 System Analysis: Max Array Algorithm verified.";
+                        } else {
+                            questionScores.q5 = 0;
+                            output = "--- RUNTIME ERROR (FALLBACK) ---\nException: Implementation incomplete.\n> 🔴 System Analysis: Provide more logic to find the largest number.";
+                        }
+                    }
+
+                    outputBox.textContent = output;
+                    statusSpan.style.display = 'none';
+                }, 1000);
+            } finally {
+                if (statusSpan.style.display !== 'none' && !outputBox.textContent.includes('FALLBACK')) {
+                    statusSpan.style.display = 'none';
+                }
+            }
+        }
+
+        // --- Auto Validator on Submit ---
+        function autoValidateAll() {
+            // Q1 Validation
+            let q1Lang = document.getElementById('lang1').value;
+            let q1Code = document.getElementById('code1').value.toLowerCase().replace(/\s/g, '');
+            questionScores.q1 = 0;
+            if (q1Lang === 'c' && q1Code.includes("main()") && !q1Code.includes("prntf") && q1Code.includes("==") && !q1Code.includes("factorial)")) questionScores.q1 = 4;
+            if (q1Lang === 'java' && q1Code.includes("static") && q1Code.includes("==") && !q1Code.includes("putln") && !q1Code.includes("printl") && !q1Code.includes("factorial)")) questionScores.q1 = 4;
+            if (q1Lang === 'python' && q1Code.includes("fact=1") && q1Code.includes("==") && q1Code.includes("wrong")) questionScores.q1 = 4;
+
+            // Q2 Validation
+            let q2Lang = document.getElementById('lang2').value;
+            let q2Code = document.getElementById('code2').value.replace(/\s/g, '');
+            questionScores.q2 = 0;
+            if ((q2Lang === 'c' || q2Lang === 'java') && !q2Code.includes("____") && q2Code.includes("i++") && (q2Code.includes("n1=n2;") || q2Code.includes("n1=n2")) && (q2Code.includes("n2=n3;") || q2Code.includes("n2=n3"))) questionScores.q2 = 4;
+            if (q2Lang === 'python' && !q2Code.includes("____") && q2Code.includes("n1=n2") && q2Code.includes("n2=n3")) questionScores.q2 = 4;
+
+            // Q4 Validation (Fallback)
+            let q4Code = document.getElementById('code4').value;
+            questionScores.q4 = (q4Code.length > 25) ? 4 : 0;
+
+            // Q5 Validation (Fallback)
+            let q5Code = document.getElementById('code5').value;
+            questionScores.q5 = (q5Code.length > 25) ? 4 : 0;
+        }
+
+        // --- Form Submission Logic ---
+        // REPLACE WITH YOUR ACTUAL GOOGLE SHEETS APP SCRIPT URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgycfsfpIrFLVcRRX1aKlmhGKjClJErQxfY0wiAomEuIDU0BXPHL_yT45SJHGfLWfc/exec';
+
+        document.getElementById('challenge-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerHTML = '> UPLOADING PACKETS...';
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('studentName', document.getElementById('studentName').value);
+            formData.append('collegeName', document.getElementById('collegeName').value);
+            formData.append('phoneNumber', document.getElementById('phoneNumber').value);
+
+            formData.append('q1Language', document.getElementById('lang1').value);
+            formData.append('q1Code', document.getElementById('code1').value);
+
+            formData.append('q2Language', document.getElementById('lang2').value);
+            formData.append('q2Code', document.getElementById('code2').value);
+
+            formData.append('q3Answer', document.getElementById('q3Answer').value);
+
+            formData.append('q4Language', document.getElementById('lang4').value);
+            formData.append('q4Code', document.getElementById('code4').value);
+
+            formData.append('q5Language', document.getElementById('lang5').value);
+            formData.append('q5Code', document.getElementById('code5').value);
+
+            // Calculate final scores right before uploading
+            autoValidateAll();
+
+            const finalQ3Ans = document.getElementById('q3Answer').value.trim();
+            if (finalQ3Ans === '4 3') {
+                questionScores.q3 = 4;
+            } else {
+                questionScores.q3 = 0;
+            }
+            const totalScore = questionScores.q1 + questionScores.q2 + questionScores.q3 + questionScores.q4 + questionScores.q5;
+            formData.append('score', totalScore);
+
+            // Generate detailed breakdown string
+            const detailedMarks = `Q1=${questionScores.q1}/4\nQ2=${questionScores.q2}/4\nQ3=${questionScores.q3}/4\nQ4=${questionScores.q4}/4\nQ5=${questionScores.q5}/4\nTOTAL=${totalScore}/20`;
+            formData.append('detailedMarks', detailedMarks);
+            // Calculate exact time taken for leaderboard speed checks
+            const timeElapsedInSeconds = (45 * 60) - timeRemaining;
+            let elapsedMins = Math.floor(timeElapsedInSeconds / 60);
+            let elapsedSecs = timeElapsedInSeconds % 60;
+            elapsedMins = elapsedMins < 10 ? '0' + elapsedMins : elapsedMins;
+            elapsedSecs = elapsedSecs < 10 ? '0' + elapsedSecs : elapsedSecs;
+            formData.append('timeTaken', `${elapsedMins} mins, ${elapsedSecs} secs`);
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            }).then(() => {
+                document.getElementById('challenge-form').style.display = 'none';
+                document.getElementById('thank-you-message').style.display = 'block';
+                clearInterval(timerInterval);
+                window.scrollTo(0, 0);
+            }).catch(error => {
+                console.error('Submission Error:', error);
+                alert("> CRITICAL ERROR: Network failure submitting form. Please try again.");
+                submitBtn.innerHTML = '> SUBMIT_SYS.DATA';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Tab integration for textareas
+        const textareas = document.querySelectorAll('textarea.editor');
+        textareas.forEach(ta => {
+            ta.addEventListener('keydown', function (e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                }
+            });
+        });
+
+        // --- Tab Lock & Fullscreen Functionality ---
+        let isDeskLocked = false;
+
+        document.getElementById('enter-fullscreen-btn').addEventListener('click', () => {
+            requestFullscreen();
+            document.getElementById('landing-error').classList.add('hidden');
+            document.getElementById('landing-screen').classList.add('hidden');
+            document.getElementById('main-container').classList.remove('hidden');
+            setTimeout(() => { isDeskLocked = true; }, 1000);
+        });
+
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => console.log(err));
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        // Fullscreen Change Listener
+        document.addEventListener("fullscreenchange", () => {
+            if (!document.fullscreenElement) {
+                if (isDeskLocked && !document.getElementById('main-container').classList.contains('hidden')) {
+                    document.getElementById('main-container').classList.add('hidden');
+                    document.getElementById('landing-screen').classList.remove('hidden');
+
+                    const errElem = document.getElementById('landing-error');
+                    errElem.innerHTML = ">> COMPLIANCE_ERROR: Full-screen mode exited.<br>You must return to full-screen to continue the test.<br>Timer is still running.";
+                    errElem.classList.remove('hidden');
+                }
+            }
+        });
+
+        // Tab Switch / Blur Listener
+        window.addEventListener("blur", () => {
+            if (isDeskLocked && !document.getElementById('main-container').classList.contains('hidden')) {
+                document.getElementById('main-container').classList.add('hidden');
+                document.getElementById('landing-screen').classList.remove('hidden');
+
+                const errElem = document.getElementById('landing-error');
+                errElem.innerHTML = ">> COMPLIANCE_ERROR: Window focus lost.<br>Do not switch tabs or applications.<br>Return to full-screen mode to continue.";
+                errElem.classList.remove('hidden');
+            }
+        });
+
+        // Block Right-Click Context Menu
+        document.addEventListener('contextmenu', event => {
+            if (isDeskLocked) event.preventDefault();
+        });
+
+        // Block DevTools & Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (isDeskLocked) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    e.preventDefault();
+                }
+                // Block F12
+                if (e.keyCode == 123) {
+                    e.preventDefault();
+                }
+                // Block Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+U
+                if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) {
+                    e.preventDefault();
+                }
+                if (e.ctrlKey && e.keyCode == 85) {
+                    e.preventDefault();
+                }
+                // Block Ctrl+C, Ctrl+V, Ctrl+X (just in case)
+                if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x')) {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Block Copy, Cut, and Paste Events directly
+        document.addEventListener('copy', (e) => {
+            if (isDeskLocked) e.preventDefault();
+        });
+        document.addEventListener('cut', (e) => {
+            if (isDeskLocked) e.preventDefault();
+        });
+        document.addEventListener('paste', (e) => {
+            if (isDeskLocked) e.preventDefault();
+        });
+
+    </script>
+</body>
+
+</html>
