@@ -415,137 +415,14 @@
                     autocomplete="off">
             </div>
 
-            <!-- QUESTION 1 -->
-            <div class="question-section">
-                <h2>Q1: Spot the Defect (4 Marks)</h2>
-                <p class="problem-statement">
-                    <strong>Objective:</strong> The following ~10 line program is supposed to calculate and print the
-                    Factorial of 5 but it is <strong>heavily broken with exactly 10 errors</strong>. Fix all 10
-                    syntax/logical errors, select the appropriate language, run to verify!
-                </p>
-                <div class="editor-header">
-                    <label for="lang1">> Select Language:</label>
-                    <select id="lang1" name="lang1" required onchange="changeQ1Language()">
-                        <option value="">-- Choose --</option>
-                        <option value="c">C</option>
-                        <option value="java">Java</option>
-                        <option value="python">Python</option>
-                    </select>
-                </div>
-                <textarea id="code1" name="code1" class="editor" required
-                    placeholder="Select language to load code..."></textarea>
-                <div class="action-row">
-                    <button type="button" class="btn-run" onclick="runCode(1)">[ Execute Code ]</button>
-                    <span id="status1" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
-                </div>
-                <div id="output1" class="output-box"></div>
-            </div>
-
-            <!-- QUESTION 2 -->
-            <div class="question-section">
-                <h2>Q2: Missing Modules (4 Marks)</h2>
-                <p class="problem-statement">
-                    <strong>Objective:</strong> Fill in the <code>____</code> blanks inside the loops so the logic
-                    accurately generates the first 5 Fibonacci numbers (0 1 1 2 3).
-                </p>
-                <div class="editor-header">
-                    <label for="lang2">> Select Language:</label>
-                    <select id="lang2" name="lang2" required onchange="changeQ2Language()">
-                        <option value="">-- Choose --</option>
-                        <option value="c">C</option>
-                        <option value="java">Java</option>
-                        <option value="python">Python</option>
-                    </select>
-                </div>
-                <textarea id="code2" name="code2" class="editor" required
-                    placeholder="Select language to load code..."></textarea>
-                <div class="action-row">
-                    <button type="button" class="btn-run" onclick="runCode(2)">[ Execute Code ]</button>
-                    <span id="status2" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
-                </div>
-                <div id="output2" class="output-box"></div>
-            </div>
-
-            <!-- QUESTION 3 -->
-            <div class="question-section">
-                <h2>Q3: Reverse Engineering (4 Marks)</h2>
-                <p class="problem-statement">
-                    <strong>Objective:</strong> Trace the logic below entirely mentally. What will be the exact output
-                    printed to the terminal? NO compiler access given for this layer.
-                </p>
-                <pre class="code-block">
-int a = 2, b = 5;
-while(a < b) {
-    a++;
-    b--;
-}
-printf("%d %d", a, b);
-                </pre>
-                <div class="form-group" style="margin-top:15px; margin-bottom: 0;">
-                    <label for="q3Answer">> Predicted Terminal Output_</label>
-                    <input type="text" id="q3Answer" name="q3Answer" required
-                        placeholder="Type the final numbers outputted...">
-                </div>
-            </div>
-
-            <!-- QUESTION 4 -->
-            <div class="question-section">
-                <h2>Q4: Logic Builder (4 Marks)</h2>
-                <p class="problem-statement">
-                    <strong>Objective:</strong> Build a program from scratch to check if a String is a
-                    <strong>Palindrome</strong>. Select your language, write the core logic, run to check output, and
-                    submit!
-                </p>
-                <div class="editor-header">
-                    <label for="lang4">> Select Language:</label>
-                    <select id="lang4" name="lang4" required>
-                        <option value="">-- Choose --</option>
-                        <option value="c">C</option>
-                        <option value="java">Java</option>
-                        <option value="python">Python</option>
-                    </select>
-                </div>
-                <textarea id="code4" name="code4" class="editor" required
-                    placeholder="Write Palindrome logic here..."></textarea>
-                <div class="action-row">
-                    <button type="button" class="btn-run" onclick="runCode(4)">[ Execute Code ]</button>
-                    <span id="status4" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
-                </div>
-                <div id="output4" class="output-box"></div>
-            </div>
-
-            <!-- QUESTION 5 -->
-            <div class="question-section">
-                <h2>Q5: Master Algorithm (4 Marks)</h2>
-                <p class="problem-statement">
-                    <strong>Objective:</strong> Write a program to find and print the <strong>Largest Number</strong>
-                    present in an Array (e.g., [12, 45, 7, 23, 9]).
-                </p>
-                <div class="editor-header">
-                    <label for="lang5">> Select Language:</label>
-                    <select id="lang5" name="lang5" required>
-                        <option value="">-- Choose --</option>
-                        <option value="c">C</option>
-                        <option value="java">Java</option>
-                        <option value="python">Python</option>
-                    </select>
-                </div>
-                <textarea id="code5" name="code5" class="editor" required
-                    placeholder="Write max array logic here..."></textarea>
-                <div class="action-row">
-                    <button type="button" class="btn-run" onclick="runCode(5)">[ Execute Code ]</button>
-                    <span id="status5" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
-                </div>
-                <div id="output5" class="output-box"></div>
-            </div>
-
+            <div id="questions-container"></div>
             <button type="submit" id="submit-btn" class="submit-btn">> SUBMIT_SYS.DATA </button>
         </form>
 
         <div id="thank-you-message">
             <h2>[ ✔ ALGORITHM COMPLETED ]</h2>
             <p>Data packets successfully transmitted to host server.</p>
-            <p>You may now close this terminal securely.</p>
+            <p style="color: var(--primary); font-size: 1.5rem; margin-top: 20px;">> PLEASE WAIT FOR THE RESULTS.</p>
         </div>
     </div>
 
@@ -579,34 +456,303 @@ printf("%d %d", a, b);
         timerInterval = setInterval(updateTimer, 1000);
         updateTimer();
 
-        // --- Question 1 Language Switching ---
-        const q1Templates = {
-            c: `#include <stdio.h>\nint main( { \n    int n = 5\n    int fact = 0; \n    for (int i=1, i<=n, i++) { \n        fact = fact * i \n    }\n    prntf("Factorial is %d\\n", factorial); \n    if (fact = 120) { \n        printf("Correct") \n    }\n    return 0 \n}`,
-            java: `public class Main {\n    public void main(String[] args) { \n        int n = 5 \n        int fact = 0; \n        for (int i=1, i<=n, i++) { \n            fact = fact * i \n        }\n        System.out.putln("Fac: " + factorial); \n        if (fact = 120) { \n            System.out.printl("Correct") \n        }\n    }\n}`,
-            python: `def calc_factorial():\n    n = 5\n    fact = 0 \n    for i in range(1, n) \n        fact = fact * i\n    print("Factorial is " + factorial) \n    if fact = 120 \n        print("Correct" \n    else \n        print(Wrong)\n\ncalc_factorial()`
-        };
 
-        function changeQ1Language() {
-            const lang = document.getElementById('lang1').value;
-            document.getElementById('code1').value = q1Templates[lang] || "";
-            document.getElementById('output1').style.display = 'none';
+        // --- Dynamic Questions ---
+        const questionsPool = [
+            {
+                title: "Spot the Defect",
+                desc: "The program is supposed to calculate and print the Factorial of 5 but it is heavily broken with exactly 10 errors. Fix them all!",
+                example: "Output: Factorial is 120",
+                boilerplates: {
+                    c: "#include <stdio.h>\nint main( { \n    int n = 5\n    int fact = 0; \n    for (int i=1, i<=n, i++) { \n        fact = fact * i \n    }\n    prntf(\"Factorial is %d\\n\", factorial); \n    if (fact = 120) { \n        printf(\"Correct\") \n    }\n    return 0 \n}",
+                    java: "public class Main {\n    public void main(String[] args) { \n        int n = 5 \n        int fact = 0; \n        for (int i=1, i<=n, i++) { \n            fact = fact * i \n        }\n        System.out.putln(\"Fac: \" + factorial); \n        if (fact = 120) { \n            System.out.printl(\"Correct\") \n        }\n    }\n}",
+                    python: "def calc_factorial():\n    n = 5\n    fact = 0 \n    for i in range(1, n) \n        fact = fact * i\n    print(\"Factorial is \" + factorial) \n    if fact = 120 \n        print(\"Correct\" \n    else \n        print(Wrong)\n\ncalc_factorial()"
+                }
+            },
+            {
+                title: "Missing Modules",
+                desc: "Fill in the `____` blanks inside the loops so the logic accurately generates the first 5 Fibonacci numbers (0 1 1 2 3).",
+                example: "Output: 0 1 1 2 3",
+                boilerplates: {
+                    c: "#include <stdio.h>\nint main() {\n    int n1=0, n2=1, n3, i, count=5;\n    printf(\"%d %d\", n1, n2);\n    for(i=2; i<count; ____) {\n        n3 = n1 + n2;\n        printf(\" %d\", n3);\n        n1 = ____;\n        n2 = ____;\n    }\n    return 0;\n}",
+                    java: "public class Main {\n    public static void main(String[] args) {\n        int n1=0, n2=1, n3, i, count=5;\n        System.out.print(n1 + \" \" + n2);\n        for(i=2; i<count; ____) {\n            n3 = n1 + n2;\n            System.out.print(\" \" + n3);\n            n1 = ____;\n            n2 = ____;\n        }\n    }\n}",
+                    python: "def print_fibo():\n    n1, n2 = 0, 1\n    count = 5\n    print(n1, n2, end=\" \")\n    for i in range(2, count):\n        n3 = n1 + n2\n        print(n3, end=\" \")\n        n1 = ____\n        n2 = ____\n\nprint_fibo()"
+                }
+            },
+            {
+                title: "Longest Common Prefix",
+                desc: "Write a function to find the longest common prefix in an array of strings.",
+                example: "Input: [\"flower\",\"flow\",\"flight\"]\nOutput: \"fl\"",
+                boilerplates: {
+                    c: "#include <stdio.h>\n#include <string.h>\n\nvoid longestCommonPrefix(char strs[][20], int n, char result[]) {\n    // Write your logic here\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static String longestCommonPrefix(String[] strs) {\n        // Write your logic here\n        return \"\";\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def longest_common_prefix(strs):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Reverse a String",
+                desc: "Write a function to reverse a given string.",
+                example: "Input: \"hello\"\nOutput: \"olleh\"",
+                boilerplates: {
+                    c: "#include <stdio.h>\n#include <string.h>\n\nvoid reverse(char str[]) {\n    // Write your logic here\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static String reverseString(String s) {\n        // Write your logic here\n        return \"\";\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def reverse_string(s):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Find Maximum Element",
+                desc: "Write a function to find the largest number in an array.",
+                example: "Input: [10, 5, 20, 8]\nOutput: 20",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint findMax(int arr[], int n) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int findMax(int[] arr) {\n        // Write your logic here\n        return 0;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def find_max(arr):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Check Palindrome",
+                desc: "Write a function to check if a string is a palindrome.",
+                example: "Input: \"madam\"\nOutput: True",
+                boilerplates: {
+                    c: "#include <stdio.h>\n#include <string.h>\n\nint isPalindrome(char str[]) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static boolean isPalindrome(String s) {\n        // Write your logic here\n        return false;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def is_palindrome(s):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Count Vowels",
+                desc: "Write a function to count vowels in a string.",
+                example: "Input: \"computer\"\nOutput: 3",
+                boilerplates: {
+                    c: "#include <stdio.h>\n#include <string.h>\n\nint countVowels(char str[]) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int countVowels(String s) {\n        // Write your logic here\n        return 0;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def count_vowels(s):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Factorial",
+                desc: "Write a function to find the factorial of a number.",
+                example: "Input: 5\nOutput: 120",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint factorial(int n) {\n    // Write your logic here\n    return 1;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int factorial(int n) {\n        // Write your logic here\n        return 1;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def factorial(n):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Remove Duplicates",
+                desc: "Write a function to remove duplicate elements from an array.",
+                example: "Input: [1,2,2,3,4]\nOutput: [1,2,3,4]",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint removeDuplicates(int arr[], int n) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "import java.util.Arrays;\n\npublic class Main {\n    static int[] removeDuplicates(int[] arr) {\n        // Write your logic here\n        return arr;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def remove_duplicates(arr):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Fibonacci Series",
+                desc: "Write a function to print the first N Fibonacci numbers.",
+                example: "Input: 5\nOutput: 0 1 1 2 3",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nvoid fibonacci(int n) {\n    // Write your logic here\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static void fibonacci(int n) {\n        // Write your logic here\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def fibonacci(n):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Check Prime",
+                desc: "Write a function to check whether a number is prime.",
+                example: "Input: 11\nOutput: True",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint isPrime(int n) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static boolean isPrime(int n) {\n        // Write your logic here\n        return false;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def is_prime(n):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Sum of Digits",
+                desc: "Write a function to find the sum of digits.",
+                example: "Input: 456\nOutput: 15",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint sumOfDigits(int n) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int sumOfDigits(int n) {\n        // Write your logic here\n        return 0;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def sum_of_digits(n):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Second Largest Number",
+                desc: "Write a function to find the second largest number in an array.",
+                example: "Input: [10,20,30,40]\nOutput: 30",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint secondLargest(int arr[], int n) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "import java.util.Arrays;\n\npublic class Main {\n    static int secondLargest(int[] arr) {\n        // Write your logic here\n        return 0;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def second_largest(arr):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Find Missing Number",
+                desc: "Write a function to find the missing number from 1 to N.",
+                example: "Input: [1,2,4,5]\nOutput: 3",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint missingNumber(int arr[], int n) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int missingNumber(int[] arr, int n) {\n        // Write your logic here\n        return 0;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def missing_number(arr, n):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Anagram Check",
+                desc: "Write a function to check if two strings are anagrams.",
+                example: "Input: \"listen\",\"silent\"\nOutput: True",
+                boilerplates: {
+                    c: "#include <stdio.h>\n#include <string.h>\n\nint isAnagram(char a[], char b[]) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "import java.util.Arrays;\n\npublic class Main {\n    static boolean isAnagram(String s1, String s2) {\n        // Write your logic here\n        return false;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def is_anagram(s1, s2):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Count Words",
+                desc: "Write a function to count words in a sentence.",
+                example: "Input: \"I love coding\"\nOutput: 3",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint countWords(char str[]) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int countWords(String s) {\n        // Write your logic here\n        return 0;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def count_words(s):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Armstrong Number",
+                desc: "Write a function to check whether a number is an Armstrong number.",
+                example: "Input: 153\nOutput: True",
+                boilerplates: {
+                    c: "#include <stdio.h>\n#include <math.h>\n\nint isArmstrong(int n) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static boolean isArmstrong(int n) {\n        // Write your logic here\n        return false;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def is_armstrong(n):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Sort an Array",
+                desc: "Write a function to sort an array in ascending order.",
+                example: "Input: [5,3,1,4]\nOutput: [1,3,4,5]",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nvoid sortArray(int arr[], int n) {\n    // Write your logic here\n}\n\nint main() {\n    return 0;\n}",
+                    java: "import java.util.Arrays;\n\npublic class Main {\n    static void sortArray(int[] arr) {\n        // Write your logic here\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def sort_array(arr):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Find GCD",
+                desc: "Write a function to find the GCD of two numbers.",
+                example: "Input: 12,18\nOutput: 6",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint gcd(int a, int b) {\n    // Write your logic here\n    return 1;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int gcd(int a, int b) {\n        // Write your logic here\n        return 1;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def gcd(a, b):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Find LCM",
+                desc: "Write a function to find the LCM of two numbers.",
+                example: "Input: 4,6\nOutput: 12",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint lcm(int a, int b) {\n    // Write your logic here\n    return 1;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int lcm(int a, int b) {\n        // Write your logic here\n        return 1;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def lcm(a, b):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Character Frequency",
+                desc: "Write a function to find the frequency of each character.",
+                example: "Input: \"apple\"\nOutput: a:1, p:2, l:1, e:1",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nvoid charFrequency(char str[]) {\n    // Write your logic here\n}\n\nint main() {\n    return 0;\n}",
+                    java: "import java.util.*;\n\npublic class Main {\n    static void charFrequency(String s) {\n        // Write your logic here\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def char_frequency(s):\n    # Write your logic here\n    pass\n"
+                }
+            },
+            {
+                title: "Binary to Decimal",
+                desc: "Write a function to convert binary to decimal.",
+                example: "Input: \"1010\"\nOutput: 10",
+                boilerplates: {
+                    c: "#include <stdio.h>\n\nint binaryToDecimal(char bin[]) {\n    // Write your logic here\n    return 0;\n}\n\nint main() {\n    return 0;\n}",
+                    java: "public class Main {\n    static int binaryToDecimal(String b) {\n        // Write your logic here\n        return 0;\n    }\n    public static void main(String[] args) {\n    }\n}",
+                    python: "def binary_to_decimal(b):\n    # Write your logic here\n    pass\n"
+                }
+            }
+        ];
+
+        const selectedQuestions = [];
+
+        function loadQuestions() {
+            // guarantee spot the defect is always here
+            const spotDefect = questionsPool.find(q => q.title === "Spot the Defect");
+            const missingMod = questionsPool.find(q => q.title === "Missing Modules");
+            const others = questionsPool.filter(q => q.title !== "Spot the Defect" && q.title !== "Missing Modules").sort(() => 0.5 - Math.random());
+            if (spotDefect) selectedQuestions.push(spotDefect);
+            if (missingMod) selectedQuestions.push(missingMod);
+            const remaining = 5 - selectedQuestions.length;
+            if (remaining > 0) {
+                selectedQuestions.push(...others.slice(0, remaining));
+            }
+
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            selectedQuestions.forEach((q, idx) => {
+                const i = idx + 1;
+                // Important: Using template literal correctly escapes block formatting.
+                container.innerHTML += `
+                    <div class="question-section">
+                        <h2>Q${i}: ${q.title} (4 Marks)</h2>
+                        <p class="problem-statement">
+                            <strong>Objective:</strong> ${q.desc}<br><br>
+                            <strong>Example:</strong><br>
+                            <span style="white-space: pre-wrap;">${q.example}</span>
+                        </p>
+                        <div class="editor-header">
+                            <label for="lang${i}">> Select Language:</label>
+                            <select id="lang${i}" name="q${i}Language" required onchange="changeLanguage(${i})">
+                                <option value="">-- Choose --</option>
+                                <option value="c">C</option>
+                                <option value="java">Java</option>
+                                <option value="python">Python</option>
+                            </select>
+                        </div>
+                        <textarea id="code${i}" name="q${i}Code" class="editor" required placeholder="Select language to load code..."></textarea>
+                        <div class="action-row">
+                            <button type="button" class="btn-run" onclick="runCode(${i})">[ Execute Code ]</button>
+                            <span id="status${i}" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
+                        </div>
+                        <div id="output${i}" class="output-box"></div>
+                    </div>
+                `;
+            });
+
+            const textareas = document.querySelectorAll('textarea.editor');
+            textareas.forEach(ta => {
+                ta.addEventListener('keydown', function (e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                        this.selectionStart = this.selectionEnd = start + 4;
+                    }
+                });
+            });
         }
 
-        // --- Question 2 Language Switching ---
-        const q2Templates = {
-            c: `#include <stdio.h>\nint main() {\n    int n1=0, n2=1, n3, i, count=5;\n    printf("%d %d", n1, n2);\n    for(i=2; i<count; ____) {\n        n3 = n1 + n2;\n        printf(" %d", n3);\n        n1 = ____;\n        n2 = ____;\n    }\n    return 0;\n}`,
-            java: `public class Main {\n    public static void main(String[] args) {\n        int n1=0, n2=1, n3, i, count=5;\n        System.out.print(n1 + " " + n2);\n        for(i=2; i<count; ____) {\n            n3 = n1 + n2;\n            System.out.print(" " + n3);\n            n1 = ____;\n            n2 = ____;\n        }\n    }\n}`,
-            python: `def print_fibo():\n    n1, n2 = 0, 1\n    count = 5\n    print(n1, n2, end=" ")\n    for i in range(2, count):\n        n3 = n1 + n2\n        print(n3, end=" ")\n        n1 = ____\n        n2 = ____\n\nprint_fibo()`
-        };
-
-        function changeQ2Language() {
-            const lang = document.getElementById('lang2').value;
-            document.getElementById('code2').value = q2Templates[lang] || "";
-            document.getElementById('output2').style.display = 'none';
+        function changeLanguage(i) {
+            const lang = document.getElementById(`lang${i}`).value;
+            const qIndex = i - 1;
+            const editor = document.getElementById(`code${i}`);
+            if (lang && selectedQuestions[qIndex].boilerplates[lang]) {
+                if (!editor.value || Object.values(selectedQuestions[qIndex].boilerplates).includes(editor.value)) {
+                    editor.value = selectedQuestions[qIndex].boilerplates[lang];
+                }
+            }
         }
 
-
-        // --- Code Execution Module (Live API with Offline Fallback) ---
         let questionScores = { q1: 0, q2: 0, q3: 0, q4: 0, q5: 0 };
 
         async function runCode(questionNumber) {
@@ -633,7 +779,6 @@ printf("%d %d", a, b);
             else if (langValue === 'java') languageId = 91; // Java JDK 17
 
             try {
-                // Attempt Live API call
                 const response = await fetch("https://ce.judge0.com/submissions?base64_encoded=false&wait=true", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -650,165 +795,88 @@ printf("%d %d", a, b);
                 let errorOutput = result.compile_output || result.stderr || result.message || "";
                 let validationMessage = "";
 
-                if (result.status.id === 3) { // 3 means Accepted (Compilation & Run Success)
-                    if (questionNumber === 1) {
+                if (result.status.id === 3) {
+                    let success = false;
+                    const qIndex = questionNumber - 1;
+                    const currentQuestion = selectedQuestions[qIndex];
+                    if (currentQuestion && currentQuestion.title === "Spot the Defect") {
                         const code = codeEditor.toLowerCase().replace(/\s/g, '');
-                        let success = false;
                         if (langValue === 'c') success = code.includes("main()") && !code.includes("prntf") && code.includes("==") && !code.includes("factorial)");
                         else if (langValue === 'java') success = code.includes("static") && code.includes("==") && !code.includes("putln") && !code.includes("printl") && !code.includes("factorial)");
                         else if (langValue === 'python') success = code.includes("fact=1") && code.includes("==") && code.includes("wrong");
+                        else success = false;
 
                         if (success && actualOutput.includes("120")) {
-                            questionScores.q1 = 4;
-                            validationMessage = "\n> 🟢 System Analysis: Target output achieved. All defects neutralized.";
+                            success = true;
+                            validationMessage = "\n> [+] System Analysis: Target output achieved. All defects neutralized.";
                         } else {
-                            questionScores.q1 = 0;
-                            validationMessage = "\n> 🔴 System Analysis: Executed, but logic still incorrect or defects remain.";
+                            success = false;
+                            validationMessage = "\n> [-] System Analysis: Executed, but logic still incorrect or defects remain.";
                         }
-                    } else if (questionNumber === 2) {
+                    } else if (currentQuestion && currentQuestion.title === "Missing Modules") {
                         const code = codeEditor.replace(/\s/g, '');
-                        let success = false;
                         if (langValue === 'c' || langValue === 'java') success = (!code.includes("____")) && code.includes("i++") && (code.includes("n1=n2;") || code.includes("n1=n2")) && (code.includes("n2=n3;") || code.includes("n2=n3"));
                         else if (langValue === 'python') success = (!code.includes("____")) && code.includes("n1=n2") && code.includes("n2=n3");
+                        else success = false;
 
                         if (success && actualOutput.includes("0 1 1 2 3")) {
-                            questionScores.q2 = 4;
-                            validationMessage = "\n> 🟢 System Analysis: Modules linked successfully.";
+                            success = true;
+                            validationMessage = "\n> [+] System Analysis: Modules linked successfully.";
                         } else {
-                            questionScores.q2 = 0;
-                            validationMessage = "\n> 🔴 System Analysis: Blanks filled, but output does not match first 5 fibonacci.";
+                            success = false;
+                            validationMessage = "\n> [-] System Analysis: Blanks filled, but output does not match first 5 fibonacci.";
                         }
-                    } else if (questionNumber === 4) {
-                        if (codeEditor.length > 25) {
-                            questionScores.q4 = 4;
-                            validationMessage = "\n> 🟢 System Analysis: Palindrome validated live.";
+                    } else {
+                        let expectedOutput = "";
+                        if (currentQuestion && currentQuestion.example) {
+                            const outputMatch = currentQuestion.example.match(/Output:\s*(.*)/);
+                            if (outputMatch && outputMatch[1]) {
+                                expectedOutput = outputMatch[1].trim();
+                            }
+                        }
+
+                        if (expectedOutput && actualOutput.trim() !== "" && (actualOutput.trim() === expectedOutput || actualOutput.trim().includes(expectedOutput))) {
+                            success = true;
+                            validationMessage = "\n> [+] System Analysis: Exact expected output generated.";
                         } else {
-                            questionScores.q4 = 0;
-                            validationMessage = "\n> 🔴 System Analysis: Insufficient code volume.";
+                            success = false;
+                            validationMessage = "\n> [-] System Analysis: Executed, but output does not match exact expectations.";
                         }
-                    } else if (questionNumber === 5) {
-                        if (codeEditor.length > 25) {
-                            questionScores.q5 = 4;
-                            validationMessage = "\n> 🟢 System Analysis: Max Array Algorithm verified live.";
-                        } else {
-                            questionScores.q5 = 0;
-                            validationMessage = "\n> 🔴 System Analysis: Provide more logic.";
-                        }
+                    }
+
+                    if (success) {
+                        questionScores[`q${questionNumber}`] = 4;
+                    } else {
+                        questionScores[`q${questionNumber}`] = 0;
                     }
                     outputBox.textContent = "--- COMPILE SUCCESS (LIVE) ---\n--- OUTPUT ---\n" + actualOutput + validationMessage;
-
                 } else {
-                    // Compilation or Runtime Error from Live API
-                    if (questionNumber === 1) questionScores.q1 = 0;
-                    if (questionNumber === 2) questionScores.q2 = 0;
-                    outputBox.textContent = "--- " + result.status.description.toUpperCase() + " (LIVE) ---\n" + errorOutput + "\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
+                    questionScores[`q${questionNumber}`] = 0;
+                    outputBox.textContent = "--- " + result.status.description.toUpperCase() + " (LIVE) ---\n" + errorOutput + "\n> [-] System Analysis: Errors Detected.";
                 }
-
             } catch (error) {
-                // FALLBACK TO OFFLINE SIMULATED BEHAVIOR
                 setTimeout(() => {
-                    let output = "";
-
-                    if (questionNumber === 1) {
-                        const code = codeEditor.toLowerCase().replace(/\s/g, '');
-                        let success = false;
-                        let errorMsg = "";
-
-                        if (langValue === 'c') {
-                            success = code.includes("main()") && !code.includes("prntf") && code.includes("==") && !code.includes("factorial)");
-                            errorMsg = "main.c: Multiple errors detected. Ensure all variables are defined and syntax typos are corrected.\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
-                        } else if (langValue === 'java') {
-                            success = code.includes("static") && code.includes("==") && !code.includes("putln") && !code.includes("printl") && !code.includes("factorial)");
-                            errorMsg = "Main.java: Failed to compile. Missing types, semi-colons, or undeclared symbols present.\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
-                        } else if (langValue === 'python') {
-                            success = code.includes("fact=1") && code.includes("==") && code.includes("wrong");
-                            errorMsg = "SyntaxError: Invalid syntax or missing logical condition.\n> 🔴 System Analysis: Errors Detected. Keep fixing!";
-                        }
-
-                        if (success) {
-                            questionScores.q1 = 4;
-                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- OUTPUT ---\nFactorial is 120\nCorrect\n\n> 🟢 System Analysis: Target output achieved. All defects neutralized.";
-                        } else {
-                            questionScores.q1 = 0;
-                            output = "--- COMPILE ERROR (FALLBACK) ---\n" + errorMsg;
-                        }
-
-                    } else if (questionNumber === 2) {
-                        const code = codeEditor.replace(/\s/g, '');
-                        let success = false;
-
-                        if (langValue === 'c' || langValue === 'java') {
-                            success = (!code.includes("____")) && code.includes("i++") && (code.includes("n1=n2;") || code.includes("n1=n2")) && (code.includes("n2=n3;") || code.includes("n2=n3"));
-                        } else if (langValue === 'python') {
-                            success = (!code.includes("____")) && code.includes("n1=n2") && code.includes("n2=n3");
-                        }
-
-                        if (success) {
-                            questionScores.q2 = 4;
-                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- OUTPUT ---\n0 1 1 2 3\n\n> 🟢 System Analysis: Modules linked successfully.";
-                        } else {
-                            questionScores.q2 = 0;
-                            output = "--- COMPILE ERROR (FALLBACK) ---\nUnexpected token '____'\n> 🔴 System Analysis: Some blanks are empty or incorrectly filled.";
-                        }
-
-                    } else if (questionNumber === 4) {
-                        if (codeEditor.length > 25) {
-                            questionScores.q4 = 4;
-                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- TEST CASES (SIMULATED) ---\nRunning Test 1 ('MADAM')... Passed\nRunning Test 2 ('12321')... Passed\nRunning Test 3 ('HELLO')... Passed\n\n> 🟢 System Analysis: Palindrome validated.";
-                        } else {
-                            questionScores.q4 = 0;
-                            output = "--- RUNTIME ERROR (FALLBACK) ---\nException: Logic implementation incomplete.\n> 🔴 System Analysis: Insufficient code volume.";
-                        }
-
-                    } else if (questionNumber === 5) {
-                        if (codeEditor.length > 25) {
-                            questionScores.q5 = 4;
-                            output = "--- COMPILE SUCCESS (FALLBACK) ---\n--- TEST CASES (SIMULATED) ---\nArray [12, 45, 7, 23]... Max is 45 (Passed)\nArray [9, 1, 5]......... Max is 9 (Passed)\n\n> 🟢 System Analysis: Max Array Algorithm verified.";
-                        } else {
-                            questionScores.q5 = 0;
-                            output = "--- RUNTIME ERROR (FALLBACK) ---\nException: Implementation incomplete.\n> 🔴 System Analysis: Provide more logic to find the largest number.";
-                        }
+                    questionScores[`q${questionNumber}`] = 0;
+                    if (codeEditor.length > 25) {
+                        outputBox.textContent = "--- COMPILE SUCCESS (FALLBACK) ---\n> [+] System Analysis: Code captured but output unverified. Score 0.";
+                    } else {
+                        outputBox.textContent = "--- ERROR (FALLBACK) ---\n> [-] System Analysis: Insufficient code volume. Score 0.";
                     }
-
-                    outputBox.textContent = output;
-                    statusSpan.style.display = 'none';
                 }, 1000);
             } finally {
-                if (statusSpan.style.display !== 'none' && !outputBox.textContent.includes('FALLBACK')) {
-                    statusSpan.style.display = 'none';
-                }
+                statusSpan.style.display = 'none';
             }
         }
 
-        // --- Auto Validator on Submit ---
         function autoValidateAll() {
-            // Q1 Validation
-            let q1Lang = document.getElementById('lang1').value;
-            let q1Code = document.getElementById('code1').value.toLowerCase().replace(/\s/g, '');
-            questionScores.q1 = 0;
-            if (q1Lang === 'c' && q1Code.includes("main()") && !q1Code.includes("prntf") && q1Code.includes("==") && !q1Code.includes("factorial)")) questionScores.q1 = 4;
-            if (q1Lang === 'java' && q1Code.includes("static") && q1Code.includes("==") && !q1Code.includes("putln") && !q1Code.includes("printl") && !q1Code.includes("factorial)")) questionScores.q1 = 4;
-            if (q1Lang === 'python' && q1Code.includes("fact=1") && q1Code.includes("==") && q1Code.includes("wrong")) questionScores.q1 = 4;
-
-            // Q2 Validation
-            let q2Lang = document.getElementById('lang2').value;
-            let q2Code = document.getElementById('code2').value.replace(/\s/g, '');
-            questionScores.q2 = 0;
-            if ((q2Lang === 'c' || q2Lang === 'java') && !q2Code.includes("____") && q2Code.includes("i++") && (q2Code.includes("n1=n2;") || q2Code.includes("n1=n2")) && (q2Code.includes("n2=n3;") || q2Code.includes("n2=n3"))) questionScores.q2 = 4;
-            if (q2Lang === 'python' && !q2Code.includes("____") && q2Code.includes("n1=n2") && q2Code.includes("n2=n3")) questionScores.q2 = 4;
-
-            // Q4 Validation (Fallback)
-            let q4Code = document.getElementById('code4').value;
-            questionScores.q4 = (q4Code.length > 25) ? 4 : 0;
-
-            // Q5 Validation (Fallback)
-            let q5Code = document.getElementById('code5').value;
-            questionScores.q5 = (q5Code.length > 25) ? 4 : 0;
+            // Live execution determines the score now. No auto marks for length.
         }
+
+        document.addEventListener('DOMContentLoaded', loadQuestions);
 
         // --- Form Submission Logic ---
         // REPLACE WITH YOUR ACTUAL GOOGLE SHEETS APP SCRIPT URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgycfsfpIrFLVcRRX1aKlmhGKjClJErQxfY0wiAomEuIDU0BXPHL_yT45SJHGfLWfc/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4O4yRj0uBEL8qC1OaR2OSw8FTt1JWTuQqVxT3MD-2Nbo_qNwgvjL4SiFSpEDBA28G/exec';
 
         document.getElementById('challenge-form').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -823,43 +891,29 @@ printf("%d %d", a, b);
             formData.append('collegeName', document.getElementById('collegeName').value);
             formData.append('phoneNumber', document.getElementById('phoneNumber').value);
 
-            formData.append('q1Language', document.getElementById('lang1').value);
-            formData.append('q1Code', document.getElementById('code1').value);
-
-            formData.append('q2Language', document.getElementById('lang2').value);
-            formData.append('q2Code', document.getElementById('code2').value);
-
-            formData.append('q3Answer', document.getElementById('q3Answer').value);
-
-            formData.append('q4Language', document.getElementById('lang4').value);
-            formData.append('q4Code', document.getElementById('code4').value);
-
-            formData.append('q5Language', document.getElementById('lang5').value);
-            formData.append('q5Code', document.getElementById('code5').value);
-
-            // Calculate final scores right before uploading
-            autoValidateAll();
-
-            const finalQ3Ans = document.getElementById('q3Answer').value.trim();
-            if (finalQ3Ans === '4 3') {
-                questionScores.q3 = 4;
-            } else {
-                questionScores.q3 = 0;
-            }
-            const totalScore = questionScores.q1 + questionScores.q2 + questionScores.q3 + questionScores.q4 + questionScores.q5;
-            formData.append('score', totalScore);
-
-            // Generate detailed breakdown string
-            const detailedMarks = `Q1=${questionScores.q1}/4\nQ2=${questionScores.q2}/4\nQ3=${questionScores.q3}/4\nQ4=${questionScores.q4}/4\nQ5=${questionScores.q5}/4\nTOTAL=${totalScore}/20`;
-            formData.append('detailedMarks', detailedMarks);
             // Calculate exact time taken for leaderboard speed checks
             const timeElapsedInSeconds = (45 * 60) - timeRemaining;
             let elapsedMins = Math.floor(timeElapsedInSeconds / 60);
             let elapsedSecs = timeElapsedInSeconds % 60;
             elapsedMins = elapsedMins < 10 ? '0' + elapsedMins : elapsedMins;
             elapsedSecs = elapsedSecs < 10 ? '0' + elapsedSecs : elapsedSecs;
-            formData.append('timeTaken', `${elapsedMins} mins, ${elapsedSecs} secs`);
+            formData.append('time', `${elapsedMins} mins, ${elapsedSecs} secs`);
 
+            for (let i = 1; i <= 5; i++) {
+                if (document.getElementById('lang' + i)) {
+                    formData.append('q' + i + 'Language', document.getElementById('lang' + i).value);
+                    formData.append('q' + i + 'Code', document.getElementById('code' + i).value);
+                }
+            }
+
+            autoValidateAll();
+
+            const totalScore = questionScores.q1 + questionScores.q2 + questionScores.q3 + questionScores.q4 + questionScores.q5;
+            formData.append('score', totalScore);
+
+            // Generate detailed breakdown string
+            const detailedMarks = `Q1=${questionScores.q1}/4\nQ2=${questionScores.q2}/4\nQ3=${questionScores.q3}/4\nQ4=${questionScores.q4}/4\nQ5=${questionScores.q5}/4\nTOTAL=${totalScore}/20`;
+            formData.append('detailedMarks', detailedMarks);
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',

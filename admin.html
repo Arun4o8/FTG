@@ -268,8 +268,13 @@
             <h1>SYS_ADMIN // FIX_THE_GLITCH</h1>
         </div>
 
-        <!-- Scores Tab -->
-        <div id="tab-scores">
+        <div class="tabs" style="margin-bottom: 20px;">
+            <button class="tab-btn active" id="btn-round1" onclick="switchTab('round1')">ROUND 1</button>
+            <button class="tab-btn" id="btn-round2" onclick="switchTab('round2')">ROUND 2</button>
+        </div>
+
+        <!-- Scores Tab Round 1 -->
+        <div id="tab-scores-round1">
             <!-- Chart Card -->
             <div class="card"
                 style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
@@ -308,17 +313,62 @@
                 </div>
             </div>
         </div>
+
+        <!-- Scores Tab Round 2 -->
+        <div id="tab-scores-round2" class="hidden">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>> TOP 3 FINALISTS (ROUND 2)</h3>
+                    <div>
+                        <button onclick="exportToCSV2()" class="primary"
+                            style="padding: 6px 12px; font-size: 14px; margin-right: 10px;">EXPORT EXCEL</button>
+                        <button onclick="loadScores2()" class="primary" style="padding: 6px 12px; font-size: 14px;">SYNC
+                            SCORES</button>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table id="scores-table-round2">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>College</th>
+                                <th>Time Taken</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyet4FC3zq5nhy95hXqkQUYSDdTTiCn1xJ0Ig91rpQAXb3qmdw-uc28RXkl_Wst-f4tkg/exec';
+        const SCRIPT_URL_1 = 'https://script.google.com/macros/s/AKfycbyet4FC3zq5nhy95hXqkQUYSDdTTiCn1xJ0Ig91rpQAXb3qmdw-uc28RXkl_Wst-f4tkg/exec';
+        const SCRIPT_URL_2 = 'https://script.google.com/macros/s/AKfycby4O4yRj0uBEL8qC1OaR2OSw8FTt1JWTuQqVxT3MD-2Nbo_qNwgvjL4SiFSpEDBA28G/exec';
+
+        function switchTab(tab) {
+            document.getElementById('btn-round1').classList.toggle('active', tab === 'round1');
+            document.getElementById('btn-round2').classList.toggle('active', tab === 'round2');
+
+            if (tab === 'round1') {
+                document.getElementById('tab-scores-round1').classList.remove('hidden');
+                document.getElementById('tab-scores-round2').classList.add('hidden');
+                loadScores1();
+            } else {
+                document.getElementById('tab-scores-round1').classList.add('hidden');
+                document.getElementById('tab-scores-round2').classList.remove('hidden');
+                loadScores2();
+            }
+        }
 
         function login() {
             const pass = document.getElementById('admin-pass').value;
             if (pass === 'admin123') {
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
-                loadScores();
+                loadScores1();
                 loadChart();
             } else {
                 alert('ACCESS DENIED: Invalid Security Key');
@@ -329,13 +379,12 @@
             return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        async function loadScores() {
+        async function loadScores1() {
             const tbody = document.querySelector('#scores-table tbody');
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Fetching logs...</td></tr>';
-            if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyet4FC3zq5nhy95hXqkQUYSDdTTiCn1xJ0Ig91rpQAXb3qmdw-uc28RXkl_Wst-f4tkg/exec' && false) return; // Skip check for live URL
 
             try {
-                const res = await fetch(SCRIPT_URL + '?action=getScores');
+                const res = await fetch(SCRIPT_URL_1 + '?action=getScores');
                 const data = await res.json();
                 tbody.innerHTML = '';
 
@@ -360,6 +409,41 @@
             }
         }
 
+        async function loadScores2() {
+            const tbody = document.querySelector('#scores-table-round2 tbody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Fetching logs...</td></tr>';
+
+            try {
+                const res = await fetch(SCRIPT_URL_2 + '?action=getScores');
+                const data = await res.json();
+                tbody.innerHTML = '';
+
+                if (!data.scores || data.scores.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">No logs found.</td></tr>';
+                    return;
+                }
+
+                let parsedScores = data.scores.map(s => {
+                    let scoreVal = parseInt(String(s.marks).replace(/[^0-9]/g, '')) || 0;
+                    let timeVal = String(s.time).replace(/[^0-9]/g, ''); // Convert '12 mins, 45 secs' to '1245' for basic sorting
+                    return { ...s, scoreVal, timeVal };
+                });
+
+                // Sort: Primary by Score Descending, Secondary by Time Ascending (Fastest wins ties)
+                parsedScores.sort((a, b) => {
+                    if (b.scoreVal !== a.scoreVal) return b.scoreVal - a.scoreVal; // Highest marks
+                    return parseInt(a.timeVal || '9999') - parseInt(b.timeVal || '9999'); // Lowest time
+                });
+                parsedScores = parsedScores.slice(0, 3); // TOP 3
+
+                parsedScores.forEach((s, i) => {
+                    tbody.innerHTML += "<tr><td style='color:var(--primary); font-weight:bold;'>" + (i + 1) + "</td><td>" + escapeHTML(String(s.name)) + "</td><td>" + escapeHTML(String(s.college)) + "</td><td>" + escapeHTML(String(s.time)) + "</td><td style='font-size: 1.1em;'><span style='color:var(--primary);'>" + escapeHTML(String(s.marks)) + "</span></td></tr>";
+                });
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="5" style="color:#ef4444;">Failed to sync scores. (Please update backend script!)</td></tr>';
+            }
+        }
+
         function exportToCSV() {
             const table = document.getElementById("scores-table");
             let csv = [];
@@ -379,10 +463,29 @@
             document.body.removeChild(downloadLink);
         }
 
+        function exportToCSV2() {
+            const table = document.getElementById("scores-table-round2");
+            let csv = [];
+            for (let i = 0; i < table.rows.length; i++) {
+                let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++)
+                    row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                csv.push(row.join(","));
+            }
+            let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            let downloadLink = document.createElement("a");
+            downloadLink.download = "FTG_Round_2_Results.csv";
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
         let chartInstance = null;
         async function loadChart() {
             try {
-                const res = await fetch(SCRIPT_URL + '?action=getQuestions');
+                const res = await fetch(SCRIPT_URL_1 + '?action=getQuestions');
                 const data = await res.json();
 
                 if (!data.questions) return;
