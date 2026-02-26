@@ -720,10 +720,25 @@
                         </div>
                         <textarea id="code${i}" name="q${i}Code" class="editor" required placeholder="Select language to load code..."></textarea>
                         <div class="action-row">
-                            <button type="button" class="btn-run" onclick="runCode(${i})">[ Execute Code ]</button>
+                            <button type="button" class="btn-run" onclick="openTerminal(${i})">[ Execute Code ]</button>
                             <span id="status${i}" style="color: yellow; font-size: 0.9em; display: none;">Executing...</span>
                         </div>
-                        <div id="output${i}" class="output-box"></div>
+                        <div id="terminalBox${i}" class="output-box" style="display: none; flex-direction: column; gap: 10px; background-color: #050a05; padding: 20px;">
+                            <div id="termPreRun${i}">
+                                <div style="color: var(--primary-color); font-size: 0.95rem; margin-bottom: 10px; font-weight: bold;">> connection established. waiting for STDIN_</div>
+                                <textarea id="input${i}" style="width: 100%; height: 80px; background-color: #000; color: #0f0; border: 1px dashed #004400; font-family: var(--font-family); padding: 10px; outline: none; resize: vertical;" placeholder="Type your custom input (stdin) here if needed, then hit [ Submit to Server ]."></textarea>
+                                <div style="margin-top: 15px;">
+                                    <button type="button" class="btn-run" style="border-style: dashed;" onclick="executeOnServer(${i})">[ Submit to Server ]</button>
+                                </div>
+                            </div>
+                            <div id="termPostRun${i}" style="display: none;">
+                                <div style="color: var(--primary-color); font-size: 0.95rem; font-weight: bold; border-bottom: 1px dashed #004400; padding-bottom: 10px;">> [ SERVER RESPONSE ]</div>
+                                <div id="output${i}" style="margin-top: 15px; white-space: pre-wrap; font-size: 1rem; color: #ccc;"></div>
+                                <div style="margin-top: 20px; border-top: 1px dashed #004400; padding-top: 15px;">
+                                    <button type="button" class="btn-run" style="border-style: dashed;" onclick="openTerminal(${i})">[ Execute Again ]</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -755,12 +770,9 @@
 
         let questionScores = { q1: 0, q2: 0, q3: 0, q4: 0, q5: 0 };
 
-        async function runCode(questionNumber) {
+        function openTerminal(questionNumber) {
             const langValue = document.getElementById(`lang${questionNumber}`).value;
             const codeEditor = document.getElementById(`code${questionNumber}`).value;
-            const outputBox = document.getElementById(`output${questionNumber}`);
-            const statusSpan = document.getElementById(`status${questionNumber}`);
-
             if (!langValue) {
                 alert("Please select a programming language first!");
                 return;
@@ -770,7 +782,23 @@
                 return;
             }
 
-            outputBox.style.display = 'block';
+            const terminalBox = document.getElementById(`terminalBox${questionNumber}`);
+            if (terminalBox) terminalBox.style.display = 'flex';
+            document.getElementById(`termPreRun${questionNumber}`).style.display = 'block';
+            document.getElementById(`termPostRun${questionNumber}`).style.display = 'none';
+            document.getElementById(`input${questionNumber}`).focus();
+        }
+
+        async function executeOnServer(questionNumber) {
+            const langValue = document.getElementById(`lang${questionNumber}`).value;
+            const codeEditor = document.getElementById(`code${questionNumber}`).value;
+            const outputBox = document.getElementById(`output${questionNumber}`);
+            const statusSpan = document.getElementById(`status${questionNumber}`);
+            const stdinValue = document.getElementById(`input${questionNumber}`) ? document.getElementById(`input${questionNumber}`).value : "";
+
+            document.getElementById(`termPreRun${questionNumber}`).style.display = 'none';
+            document.getElementById(`termPostRun${questionNumber}`).style.display = 'block';
+
             outputBox.textContent = '> Compiling code in live server...';
             statusSpan.style.display = 'inline';
 
@@ -785,6 +813,7 @@
                     body: JSON.stringify({
                         source_code: codeEditor,
                         language_id: languageId,
+                        stdin: stdinValue || ""
                     })
                 });
 
@@ -795,7 +824,11 @@
                 let errorOutput = result.compile_output || result.stderr || result.message || "";
                 let validationMessage = "";
 
-                if (result.status.id === 3) {
+                if (actualOutput === "" && errorOutput === "") {
+                    actualOutput = "\n> [No Output Generated by Code]";
+                }
+
+                if (result.status && result.status.id === 3) {
                     let success = false;
                     const qIndex = questionNumber - 1;
                     const currentQuestion = selectedQuestions[qIndex];
@@ -835,12 +868,15 @@
                             }
                         }
 
-                        if (expectedOutput && actualOutput.trim() !== "" && (actualOutput.trim() === expectedOutput || actualOutput.trim().includes(expectedOutput))) {
+                        let normExpected = expectedOutput ? expectedOutput.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() : "";
+                        let normActual = actualOutput ? actualOutput.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() : "";
+
+                        if (normExpected && (normActual === normExpected || normActual.includes(normExpected))) {
                             success = true;
-                            validationMessage = "\n> [+] System Analysis: Exact expected output generated.";
+                            validationMessage = "\n\n> [+] System Analysis: Algorithm Output Verified. [ CORRECT ]";
                         } else {
                             success = false;
-                            validationMessage = "\n> [-] System Analysis: Executed, but output does not match exact expectations.";
+                            validationMessage = "\n\n> [-] System Analysis: Algorithm Output Mismatch. [ INCORRECT ]\n> Expected: " + expectedOutput;
                         }
                     }
 
@@ -849,18 +885,18 @@
                     } else {
                         questionScores[`q${questionNumber}`] = 0;
                     }
-                    outputBox.textContent = "--- COMPILE SUCCESS (LIVE) ---\n--- OUTPUT ---\n" + actualOutput + validationMessage;
+                    outputBox.textContent = actualOutput + validationMessage;
                 } else {
                     questionScores[`q${questionNumber}`] = 0;
-                    outputBox.textContent = "--- " + result.status.description.toUpperCase() + " (LIVE) ---\n" + errorOutput + "\n> [-] System Analysis: Errors Detected.";
+                    outputBox.textContent = errorOutput + "\n\n> [-] System Analysis: Errors Detected.";
                 }
             } catch (error) {
                 setTimeout(() => {
                     questionScores[`q${questionNumber}`] = 0;
                     if (codeEditor.length > 25) {
-                        outputBox.textContent = "--- COMPILE SUCCESS (FALLBACK) ---\n> [+] System Analysis: Code captured but output unverified. Score 0.";
+                        outputBox.textContent = "> [+] System Analysis: Code captured but live server unavailable. Score 0.";
                     } else {
-                        outputBox.textContent = "--- ERROR (FALLBACK) ---\n> [-] System Analysis: Insufficient code volume. Score 0.";
+                        outputBox.textContent = "> [-] System Analysis: Insufficient code volume. Score 0.";
                     }
                 }, 1000);
             } finally {
